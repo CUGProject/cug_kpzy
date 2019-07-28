@@ -3,6 +3,7 @@ import './tease_data_structure.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_ui_framework/api/write_tease_own_http_get_API.dart';
 import  'package:flutter_ui_framework/utils/tap_widget_event.dart';
+import 'package:flutter_ui_framework/utils/ImageVidwoView.dart';
 import  'dart:io';
 import 'dart:convert';
 /*
@@ -224,7 +225,7 @@ class _Board extends State<Board> {
                     MaterialPageRoute(
                         builder: (BuildContext context)
                         {
-                          return Magnify(tease.widget_set[0]);
+                          return ImageVideoView(tease.widget_set,0);
                         }
                     )
                 );},
@@ -468,7 +469,7 @@ class ListItemWidget extends StatelessWidget{
                       MaterialPageRoute(
                           builder: (BuildContext context)
                           {
-                            return Magnify(tease.widget_set[index]);
+                            return ImageVideoView(tease.widget_set,index);
                           }
                       )
                   );},

@@ -268,6 +268,13 @@ packages:
       url: "https://dart-pub.mirrors.sjtug.sjtu.edu.cn/"
     source: hosted
     version: "0.7.2"
+  webview_flutter:
+    dependency: "direct main"
+    description:
+      name: webview_flutter
+      url: "https://dart-pub.mirrors.sjtug.sjtu.edu.cn/"
+    source: hosted
+    version: "0.2.0"
 sdks:
   dart: ">=2.2.0 <3.0.0"
   flutter: ">=1.2.1 <2.0.0"

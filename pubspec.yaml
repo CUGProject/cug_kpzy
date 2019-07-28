@@ -27,7 +27,8 @@ dependencies:
   flutter_swiper: ^1.0.6
   crypto: ^2.0.6
   #flutter_webview_plugin: ^0.2.1
-  webview_flutter: ^0.3.3+2
+  #webview_flutter: ^0.3.3+2
+  webview_flutter: 0.2.0
   flutter_webview_plugin: ^0.2.1+2
   shimmer: ^1.0.0
     #camera: ^0.2.9+1 #还需要配置android iOS参考https://github.com/flutter/plugins/tree/master/packages/camera
