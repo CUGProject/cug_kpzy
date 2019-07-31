@@ -36,9 +36,16 @@ dependencies:
   sqflite: ^1.1.0
   camera_utils: ^0.1.8
   http: ^0.11.3+16
+  flutter_markdown: ^0.2.0
   path_provider: ^0.4.0
   timeline_list: ^0.0.4
-
+  simple_permissions: 0.1.9
+  zefyr:
+    git:
+      url: https://github.com/memspace/zefyr.git
+      path: packages/zefyr
+      ref: flutter-master
+  intl: ^0.15.7
 
 dev_dependencies:
   flutter_test:
@@ -60,11 +67,8 @@ flutter:
     fonts:
       - asset: ICONS/iconfont.ttf
   assets:
-    - images/headtest.jpg
-    - images/intimate_module.jpg
-    - images/intimate_module2.jpg
-    - images/intimate_module3.jpg
-    - images/intiUserCenter.jpg
+    - images/
+    - assets/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

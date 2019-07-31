@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_framework/style//global_config.dart';
-import 'package:flutter_ui_framework/data_structure/article.dart';
+import 'package:flutter_ui_framework/data_structure/listview_article_ds.dart';
 
 
 //该页是热搜榜单界面
@@ -12,6 +12,20 @@ class Follow extends StatefulWidget {
 }
 
 class _FollowState extends State<Follow> {
+
+  _loadArticleList()
+  {
+    /*
+    将后端数据加入articleList
+     */
+
+  }
+  @override
+  void initState()
+  {
+    super.initState();
+    _loadArticleList();
+  }
   Widget build_part(Article article,int number)
   {
    return new Center(

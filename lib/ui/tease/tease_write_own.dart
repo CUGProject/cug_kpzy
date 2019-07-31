@@ -116,11 +116,20 @@ class _Board extends State<Board> {
           });
         });
   }
+
+  _getGreatTease()
+  {
+    great_tease.clear();
+    /*
+    接受后端数据，仿照getInfo，讲吐槽add到great_tease里面
+     */
+  }
   @override
   initState() {
     super.initState();
    print("1");
    _getInfo();
+    _getGreatTease();
   }
 
   List<Tease_ds> great_tease = teaseList;
@@ -489,6 +498,12 @@ class ListItemWidget extends StatelessWidget{
           get_great_comment_widget(tease,context),//显示精彩评论
           Container(height: MediaQuery.of(context).size.height/50*0.7,),
           get_input_widget(context,tease),//提供输入款
+          Container(
+              child:Center(
+            child: FlatButton(onPressed: (){
+
+            }, child: Text("发表评论"),color: Colors.blue,),
+          )),
           Container(
             decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey,width: 1))),//底部边框
           )

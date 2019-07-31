@@ -27,6 +27,7 @@ class Tease_ds
       }
   }
 }
+
 //对应滚动栏的吐槽
 String test_url = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1677427933,3025107141&fm=27&gp=0.jpg";
 Widget get_test_widget(String url) {
@@ -38,6 +39,7 @@ Widget get_test_widget(String url) {
     ),
   );
 }
+
 //对应精彩吐槽公布栏的吐槽
 Widget test_widget_great = Container(
   decoration: BoxDecoration(
