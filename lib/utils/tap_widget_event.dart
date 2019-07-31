@@ -75,13 +75,14 @@ class Magnify_video_State extends State<Magnify_video>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Video Demo',
+      //title: 'Video Demo',
       home: new Scaffold(
         body: new Center(
           child: _controller.value.initialized
           // 加载成功
-              ? new AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
+              ? new Container(
+            height: MediaQuery.of(context).size.height,
+            //aspectRatio: _controller.value.aspectRatio,
             child: VideoPlayer(_controller),
           ) : new Container(),
         ),

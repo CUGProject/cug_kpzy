@@ -12,6 +12,7 @@ void main(){
   runApp(ImageVideoView(w_list));
 }
  */
+
 class ImageVideoView extends StatefulWidget {
   List<Widget> w_list = List();
   int index;

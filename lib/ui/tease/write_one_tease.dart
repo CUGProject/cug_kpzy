@@ -105,16 +105,36 @@ class _writeOneTease extends State<writeOneTease>
   //存放视频的widget
   Widget _getVideoWidget(String _thumbPath,String path)
   {
-    return GestureDetector(
+    return ConstrainedBox(
+        constraints: const BoxConstraints(
+        minWidth: 150.0,
+        minHeight: 100.0,
+        maxWidth: 150.0,
+        maxHeight: 150.0,),
+    child:GestureDetector(
       child: _thumbPath != null
           ? new Opacity(
-        opacity: 0.5,
-        child: new Image.file(
-          File(
-            _thumbPath,
+        opacity: 1.0,
+        child: Stack(
+          children: <Widget>[
+            Center(
+          child: new Image.file(
+            File(
+              _thumbPath,
+            ),
+            fit: BoxFit.fitWidth,
+            //scale: 1.2,
+            //fit: BoxFit.fill,
           ),
-          fit: BoxFit.fitHeight,
         ),
+        Opacity(
+          opacity: 0.8,
+          child: Center(
+              child:Icon(Icons.play_circle_filled,color: Colors.white,)
+          ),
+        ),
+          ],
+        )
       )
           : new Container(),
       onTap: (){
@@ -128,8 +148,10 @@ class _writeOneTease extends State<writeOneTease>
             )
         );
       },
+    ),
     );
   }
+
   //根据isCapture选择提取录像或摄像
   Future _takeVideo(bool isCapture) async
   {
