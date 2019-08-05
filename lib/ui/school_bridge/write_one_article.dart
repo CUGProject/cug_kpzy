@@ -152,7 +152,6 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
                   String mk = notusMarkdown.encode(_delta);//markdown文本
                   print(mk);
                   //Navigator.of(context).pop();
-
                   String date = "2019-8-9";
                 },
               ),
