@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
+import 'package:notus/convert.dart';
+
 /*
 本代码为高校对接-->发表提问代码
 
@@ -38,6 +40,7 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
   ZefyrController(NotusDocument.fromDelta(getDelta()));
   final FocusNode _focusNode = new FocusNode();
   bool _editing = true;
+  final titleController = TextEditingController();
   StreamSubscription<NotusChange> _sub;
 
   @override
@@ -78,7 +81,7 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
     focusNode: _focusNode,
     enabled: _editing,
     );
-    final titleController = TextEditingController();
+
     final form = ListView(
       children: <Widget>[
         TextField(
@@ -144,7 +147,13 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
               new FlatButton(
                 child: new Text("确定"),
                 onPressed: () {
+                  String title = titleController.text;//标题
+                  var _delta = _controller.document.toDelta();
+                  String mk = notusMarkdown.encode(_delta);//markdown文本
+                  print(mk);
                   //Navigator.of(context).pop();
+
+                  String date = "2019-8-9";
                 },
               ),
             ],
