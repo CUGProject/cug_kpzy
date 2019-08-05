@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter_ui_framework/utils/tap_widget_event.dart';
 import 'package:camera_utils/camera_utils.dart';
 import 'package:http/http.dart' as http;
@@ -158,6 +159,7 @@ class _writeOneTease extends State<writeOneTease>
     final path = isCapture
         ? await CameraUtils.captureVideo
         : await CameraUtils.pickVideo;
+    mp4_paths.add(path);
     Future<String> thumbPath = CameraUtils.getThumbnail(path);
     thumbPath.then((tpath)
     {
@@ -220,30 +222,34 @@ class _writeOneTease extends State<writeOneTease>
   }
 
   List<String> image_psths = [];//存储图片路径
+  List<String> mp4_paths = [];
   TextEditingController _teaseController = new TextEditingController();//输入框的控制器
   void launchPost() async
   {
-    String url = "http://www.cugkpzy.com/send_tucao_content_2/117171/20171002196";
+    String url = "http://192.168.1.100:5001/send_tucao_content/117171/20171002196";
     Map<String,String> json_data = {};
-    int img_counter = 0;
-    for(int i = 0;i < image_psths.length;i++)
-      {
-        img_counter += 1 ;
-        File file = File(image_psths[i]);
-        print("img_paths: " + image_psths[i]);
-        String value = await EncodeUtil.image2Base64(file);
-        String name = "image" + img_counter.toString();
-        print("filename: " + name);
-        json_data.addAll({name:value});
-        String anony = "0";
-        if(anonymityValue)
-          anony = "1";
-        json_data.addAll({"anonym":anony});
-      }
-      json_data.addAll({"tucao_content":_teaseController.text});
+    json_data.addAll({"tucao_content":_teaseController.text});
     json_data.addAll({"kind":kindValue});
+    if(anonymityValue)
+      json_data.addAll({"anonym":"1"});
+    else json_data.addAll({"anonym":"0"});
     json_data.addAll({"image_num":image_psths.length.toString()});
-    http.post(url, body: json_data)
+    for(int i=0;i<image_psths.length;i++)
+    {
+      File file = File(image_psths[i]);
+      String value = await EncodeUtil.image2Base64(file);
+      json_data.addAll({"image"+(i+1).toString():value});
+    }
+    json_data.addAll({"mp4_num":mp4_paths.length.toString()});
+    for(int i=0;i<mp4_paths.length;i++)
+    {
+      File file = File(mp4_paths[i]);
+      String value = await file.readAsBytes().then((data){
+        return base64Encode(data);
+      });
+      json_data.addAll({"mp4_"+(i+1).toString():value});
+    }
+    await http.post(url, body: json_data)
         .then((response) {
       print("post方式->status: ${response.statusCode}");
       print("post方式->body: ${response.body}");
