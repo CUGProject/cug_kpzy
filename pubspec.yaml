@@ -34,6 +34,7 @@ dependencies:
     #camera: ^0.2.9+1 #还需要配置android iOS参考https://github.com/flutter/plugins/tree/master/packages/camera
     #fluttertoast: ^2.2.6
   sqflite: ^1.1.0
+  notus: ^0.1.3
   camera_utils: ^0.1.8
   http: ^0.11.3+16
   flutter_markdown: ^0.2.0

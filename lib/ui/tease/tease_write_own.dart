@@ -431,8 +431,13 @@ class _ListItemWidget extends State<ListItemWidget>{
             ],
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(width: MediaQuery.of(context).size.width/50.0,),
+              GestureDetector(
+              child: Icon(Icons.launch),
+                onTap: (){print("转发");},
+  ),
+              Container(width: MediaQuery.of(context).size.width/3.7,),
               GestureDetector(
                   child: new Icon(new IconData(0xe512,fontFamily: "PIcons"),size: sizeA,color: dzColor,),
                   onTap:() async {
