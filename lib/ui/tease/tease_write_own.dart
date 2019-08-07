@@ -37,10 +37,10 @@ Widget getBoardFirstLine(Tease_ds tease,BuildContext context)  //显示滚动屏
           Container(width: MediaQuery.of(context).size.width/50,),
           GestureDetector(
             child: Container(width: MediaQuery.of(context).size.width/9,
-              height: MediaQuery.of(context).size.height/18,
+              height: MediaQuery.of(context).size.height/17,
               //decoration:BoxDecoration(borderRadius: BorderRadius.all(const Radius.circular(10)),image: new DecorationImage(image: new NetworkImage(tease.headUrl,scale: 0.3),)),
               child: new CircleAvatar(//绘制圆头像
-                radius: 1,
+                radius: 36,
                 backgroundImage: new NetworkImage(
                     tease.headUrl,scale: 0.5),),
             ),
@@ -323,7 +323,6 @@ class _Board extends State<Board> {
         ),
         onRefresh: _handleRefresh,
       ),
-
     );
   }
 }
@@ -417,7 +416,7 @@ class _ListItemWidget extends State<ListItemWidget>{
       ),
     );
   }
-  Widget board_last_line_left(Tease_ds tease,int teast_index,BuildContext context,double sizeA,double sizeB) //该行用于显示滚动屏两个图标，点赞和评论
+  Widget board_last_line_left(Tease_ds tease,BuildContext context,double sizeA,double sizeB) //该行用于显示滚动屏两个图标，点赞和评论
   {
     return Container(
       alignment: Alignment.bottomLeft,
@@ -443,11 +442,10 @@ class _ListItemWidget extends State<ListItemWidget>{
                   onTap:() async {
                     print("点赞");
                     var req = await http.post("http://www.cugkpzy.com/dian_zan/2019_08_01_21_40_13");
-                    print("tease_ds索引："+teast_index.toString());
+                    //print("tease_ds索引："+teast_index.toString());
                     print("点赞数："+req.body);
                     setState(() {
-                      scroll_tease[teast_index].upItNum = int.parse(req.body);
-                      tease.upItNum = scroll_tease[teast_index].upItNum;
+                      tease.upItNum = int.parse(req.body);
                       dzColor = Colors.red;
                     });
                   }
@@ -534,7 +532,7 @@ class _ListItemWidget extends State<ListItemWidget>{
             ),
           ),
           Container(height: MediaQuery.of(context).size.height/100,),
-          board_last_line_left(tease,tease_index, context,25,23),
+          board_last_line_left(tease,context,25,23),
           Container(height: MediaQuery.of(context).size.height/60,),
           Container(
             padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/50,right: MediaQuery.of(context).size.width/50),
