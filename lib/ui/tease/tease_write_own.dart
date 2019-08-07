@@ -91,12 +91,28 @@ class _Board extends State<Board> {
     });
   }
 
-  _getGreatTease()
+  _getGreatTease() async
   {
     great_tease.clear();
     /*
     接受后端数据，仿照getInfo，讲吐槽add到great_tease里面
      */
+    http.post("http://www.cugkpzy.com/show_some_best_tucaos").then(
+        (response){
+          print("获取到数据！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+          Map<String,dynamic> req_map = {};
+          req_map = jsonDecode(response.body);
+          for(int i=0;i<4;i++)
+          {
+            Tease tease = new Tease.fromJson(req_map["tucao_module_list"][i]);
+            print("第"+i.toString()+"个数据："+tease.toString());
+            great_tease.add(Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,
+                kind:tease.kind,time:tease.time,content_title:tease.content_title,great_comment:tease.great_comment,upItNum: tease.upItNum,commentNum: tease.commentNum,
+                widget_set2: tease.widget_set));
+          }
+          print("接受完毕");
+        }
+    );
   }
   @override
   initState() {

@@ -226,29 +226,29 @@ class _writeOneTease extends State<writeOneTease>
   TextEditingController _teaseController = new TextEditingController();//输入框的控制器
   void launchPost() async
   {
-    String url = "http://192.168.1.100:5001/send_tucao_content/117171/20171002196";
+    String url = "http://www.cugkpzy.com/send_tucao_content/117171/20171002196";
     Map<String,String> json_data = {};
     json_data.addAll({"tucao_content":_teaseController.text});
-    json_data.addAll({"kind":kindValue});
-    if(anonymityValue)
-      json_data.addAll({"anonym":"1"});
-    else json_data.addAll({"anonym":"0"});
-    json_data.addAll({"image_num":image_psths.length.toString()});
-    for(int i=0;i<image_psths.length;i++)
+    json_data.addAll({"image_and_mp4_num":image_psths.length.toString()+mp4_paths.length.toString()});
+    int i=0;
+    for(;i<image_psths.length;i++)
     {
       File file = File(image_psths[i]);
       String value = await EncodeUtil.image2Base64(file);
-      json_data.addAll({"image"+(i+1).toString():value});
+      json_data.addAll({"image_"+(i+1).toString():value});
     }
-    json_data.addAll({"mp4_num":mp4_paths.length.toString()});
-    for(int i=0;i<mp4_paths.length;i++)
+    for(;i<image_psths.length+mp4_paths.length;i++)
     {
-      File file = File(mp4_paths[i]);
+      File file = File(mp4_paths[i-image_psths.length]);
       String value = await file.readAsBytes().then((data){
         return base64Encode(data);
       });
       json_data.addAll({"mp4_"+(i+1).toString():value});
     }
+    json_data.addAll({"kind":kindValue});
+    if(anonymityValue)
+      json_data.addAll({"anonym":"1"});
+    else json_data.addAll({"anonym":"0"});
     await http.post(url, body: json_data)
         .then((response) {
       print("post方式->status: ${response.statusCode}");
