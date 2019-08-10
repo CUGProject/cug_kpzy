@@ -111,6 +111,9 @@ class _Board extends State<Board> {
                 widget_set2: tease.widget_set));
           }
           print("接受完毕");
+          setState(() {
+
+          });
         }
     );
   }
@@ -119,7 +122,7 @@ class _Board extends State<Board> {
     super.initState();
     print("1");
     _getInfo();
-    //_getGreatTease();
+    _getGreatTease();
   }
 
   List<Tease_ds> great_tease = teaseList;
@@ -168,7 +171,6 @@ class _Board extends State<Board> {
               height: 14.0,
               width: 1.0,
             ),
-
             new Container(
               //alignment: Alignment.center,
                 padding: EdgeInsets.only(right: 10),
