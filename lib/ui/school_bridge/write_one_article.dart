@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
 import 'package:notus/convert.dart';
-
+import 'dart:io';
+import 'package:http/http.dart' as https;
 /*
 本代码为高校对接-->发表提问代码
 
@@ -77,9 +78,9 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
     )),),];
     final editor = ZefyrField(
       height: MediaQuery.of(context).size.height*2,
-    controller: _controller,
-    focusNode: _focusNode,
-    enabled: _editing,
+      controller: _controller,
+      focusNode: _focusNode,
+      enabled: _editing,
     );
 
     final form = ListView(
@@ -101,21 +102,21 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
       ],
     );
     return Scaffold(
-      resizeToAvoidBottomPadding: true,
-      appBar: AppBar(
-        elevation: 1.0,
-        backgroundColor: Colors.cyan,
-        brightness: Brightness.light,
-        title: Icon(Icons.arrow_back_ios,color: Colors.grey,),
-        actions: done,
-      ),
+        resizeToAvoidBottomPadding: true,
+        appBar: AppBar(
+          elevation: 1.0,
+          backgroundColor: Colors.cyan,
+          brightness: Brightness.light,
+          title: Icon(Icons.arrow_back_ios,color: Colors.grey,),
+          actions: done,
+        ),
 
-      body: ZefyrScaffold(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: form,
-              ),
-      )
+        body: ZefyrScaffold(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: form,
+          ),
+        )
     );
   }
 
@@ -124,8 +125,43 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
       _editing = true;
     });
   }
-
-  void _showDialog() {
+  Future<String> path_to_base64(String path)async{
+    File file = File(path);
+    String value = await file.readAsBytes().then((data){
+      return base64Encode(data);
+    });
+    return value;
+  }
+  void Post_artical(var _delta) async {
+    String find_str  = "insert⟨ ​ ⟩ + {embed: {type: image, source: file:///";
+    String find_str_end = "}}";
+    Map<String,dynamic> map = Map();
+    map.addAll({"json_list":json.encode(_controller.document)});
+    List<String> image_list_base64 = List();
+    for(int i=0;i<_delta.length;i++)
+    {
+      String str = _delta[i].toString();
+      if(str.startsWith(find_str) && str.endsWith(find_str_end))
+      {
+        str = str.substring(find_str.length,str.length - find_str_end.length);
+        await path_to_base64(str).then((base64_data){
+          image_list_base64.add(base64_data);
+        });
+      }
+    }
+    print("这就是图片list");
+    print(image_list_base64.length);
+    map.addAll({"image_base64_list":json.encode(image_list_base64)});
+    map.addAll({"mp4_base64_list":"[]"});
+    map.addAll({"gaoxiao_question_date_name": "2019_08_12_01_04_46"});
+    map.addAll({"class_name": 117172.toString()});
+    map.addAll({"name": 20171000718.toString()});
+    print("begin to up load:"+map.toString());
+    await https.post("http://192.168.1.120:5001/send_gaoxiao_question_response_content",body: map).then((res){
+      print(res.body);
+    });
+  }
+  void _showDialog() async {
     // flutter defined function
     showDialog(
       context: context,
@@ -149,10 +185,7 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
                 onPressed: () {
                   String title = titleController.text;//标题
                   var _delta = _controller.document.toDelta();
-                  String mk = notusMarkdown.encode(_delta);//markdown文本
-                  print(mk);
-                  //Navigator.of(context).pop();
-                  String date = "2019-8-9";
+                  Post_artical(_delta);
                 },
               ),
             ],
@@ -167,6 +200,7 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
       _editing = false;
     });
     print("document:");
+    print("test postion here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     print(_controller.document);
     _showDialog();
   }
