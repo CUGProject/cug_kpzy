@@ -29,7 +29,8 @@ class _FollowState extends State<Follow> {
   Widget build_part(Article article,int number)
   {
    return new Center(
-       child: new RaisedButton(onPressed:(){ Scaffold.of(context).showSnackBar(new SnackBar(content: new Text("跳转")));},
+       child: new RaisedButton(
+         onPressed:(){ Scaffold.of(context).showSnackBar(new SnackBar(content: new Text("跳转")));},
        //disabledColor: Colors.white,
          //splashColor: Colors.pink,
          color:Colors.white,

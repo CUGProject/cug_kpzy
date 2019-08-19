@@ -70,7 +70,7 @@ class Common {
 }
 
 class ReplyPage extends StatefulWidget {
-  Note note;//根据note显示文章内容
+  Note note;//根据note显示文章内容，
   String title;//文章标题
   int focus_number;//关注人数
   int reply_number;//回答数目

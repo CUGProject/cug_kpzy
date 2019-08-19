@@ -8,14 +8,10 @@ import 'dart:convert';
  */
 class Note {
   Note({
-    @required this.title,
     @required this.text,
-    @required this.date,
   });
 
-  final String title;
   String text;
-  final DateTime date;
   static List<Note> allFromResponse(String response) {//1
     var decodedJson = json.decode(response).cast<String, dynamic>();//2
     return decodedJson['results']
@@ -28,9 +24,7 @@ class Note {
   static Note fromMap(Map map) {
     var textJson = json.encode(map['text']);//5
     return new Note(//6
-      title: map['title'],
       text: textJson,
-      date: DateTime.parse(map['date']),//7
     );
   }
 }
