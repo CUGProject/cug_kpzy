@@ -10,18 +10,19 @@ import 'package:flutter_ui_framework/data_structure/tease_comment_ds.dart';
 本界面主要是对于一个吐槽的全部展示，主要是展示了
 全部吐槽内容（原先只是展示一部分文字），以及全部评论
 
-目前短一个text字段，只有content_title来展示前几行文字，后期要补上
+
  */
 
 
 void main()
 {
-  runApp(MaterialApp(home: Show_one_tease(tease: scroll_tease[0],),));
+  runApp(MaterialApp(home: Show_one_tease(tease: scroll_tease[0],tease_comments: [tease_comment_example],),));
 }
 
 class Show_one_tease extends StatefulWidget{
   Tease_ds tease;
-  Show_one_tease({this.tease});
+  List<Tease_comment_ds> tease_comments;
+  Show_one_tease({this.tease,this.tease_comments});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -180,7 +181,7 @@ class _Show_one_tease extends State<Show_one_tease>
                 child: new CircleAvatar(//绘制圆头像
                   radius: 36,
                   backgroundImage: new NetworkImage(
-                      tease_comment_example.head_url),),
+                      tease_comment.head_url),),
               ),
               onTap: (){print("个人中心公布栏点击");},
             ),
@@ -265,8 +266,8 @@ class _Show_one_tease extends State<Show_one_tease>
     填充all_comments，之后作为评论展示
     这里先填充前端自定义的一些comment
      */
-    for(int i = 0;i < 10;i++)
-      all_comments.add(get_comment_item(tease_comment_example));
+    for(int i = 0;i < widget.tease_comments.length;i++)
+      all_comments.add(get_comment_item(widget.tease_comments[i]));
   }
   @override
   Widget build(BuildContext context) {

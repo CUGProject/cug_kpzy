@@ -185,12 +185,12 @@ class _Board extends State<Board> {
                     */
                   },
                   icon: new Icon(
-                      Icons.border_color,
+                      Icons.filter,
                       color: Colors.black45,
                       size: 14.0
                   ),
                   label: new Text(
-                    "搜索",
+                    "筛选",
                     style: new TextStyle(color: Colors.black45),
                   ),
                 )
@@ -316,8 +316,13 @@ class _Board extends State<Board> {
     all_page_set.clear();
     for(int i = 0; i < scroll_tease.length;i++)
     {
-      all_page_set.add(new Card(child:ListItemWidget(scroll_tease[i],i),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0),),),));
+      all_page_set.add(
+        GestureDetector(
+          child: new Card(child:ListItemWidget(scroll_tease[i],i),
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0),),),),
+          onTap: (){print("详情展示");},
+        )
+      );
     }
     var size = MediaQuery.of(context).size;
     // TODO: implement build
