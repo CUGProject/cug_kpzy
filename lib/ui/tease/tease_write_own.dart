@@ -7,6 +7,10 @@ import 'package:flutter_ui_framework/utils/ImageVidwoView.dart';
 import  'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_ui_framework/ui/tease/tease_filter.dart';
+import 'package:flutter_ui_framework/ui/tease/show_one_tease.dart';
+import 'package:flutter_ui_framework/ui/tease/tease_data_structure.dart';
+import 'package:flutter_ui_framework/data_structure/tease_comment_ds.dart';
 /*
 author:李静涛
 该文件对应界面吐槽池主界面
@@ -138,13 +142,13 @@ class _Board extends State<Board> {
             new Container(
                 alignment: Alignment.topCenter,
                 child: new FlatButton.icon(
-                  onPressed: (){/*
+                  onPressed: (){
                     Navigator.of(context).push(new MaterialPageRoute(
                         builder: (context) {
-                          return new SearchPage();
+                          return Tease_filter();
                         }
                     ));
-                    */
+
                     Scaffold.of(context).showSnackBar(
                         new SnackBar(content: new Text("页面跳转")));
                   },
@@ -302,7 +306,6 @@ class _Board extends State<Board> {
       child: getBoardMainContent(great_tease[index], context),
     );
   }
-
   List<Widget> all_page_set = [];//List里面放的是所有吐槽滚动屏片段
   Future<Null> _handleRefresh() async {//下拉刷新回调函数
     await Future.delayed(Duration(seconds: 5), () {
@@ -310,6 +313,49 @@ class _Board extends State<Board> {
     });
   }
 
+  get_tease_detail() async
+  {
+    http.post("http://www.cugkpzy.com/show_tucao_module_xiangqing/2019_08_21_01_04_06").then((req){
+      Map<String,dynamic> reqmap = json.decode(req.body);
+      Tease_ds tease = Tease_ds(
+          headUrl: reqmap['tease']['headUrl'],
+          user: reqmap['tease']['user'],
+          userCollege: reqmap['tease']['userCollege'],
+          kind:reqmap['tease']['kind'],
+          time: reqmap['tease']['time'],
+          content_title: reqmap['tease']['content_title'],
+          great_comment:Map<String,String>(),
+          upItNum: reqmap['tease']['upItNum'],
+          commentNum: reqmap['tease']['commentNum'],
+          widget_set2: List<String>.from(reqmap['tease']['widget_set'])
+      );
+      List<Tease_comment_ds> tease_comments = List();
+      List<dynamic> temp = reqmap['tease_comments'];
+      for(int i=0;i<temp.length;i++){
+        //Tease_comment_ds({this.head_url,this.user_name,this.college,this.comment_text,this.reply,this.time,this.upItNum});
+        tease_comments.add(Tease_comment_ds(
+            head_url: temp[i]['head_url'],
+            user_name: temp[i]['user_name'],
+            college: temp[i]['college'],
+            comment_text: temp[i]['comment_text'],
+            reply: Map<String,String>.from(temp[i]['reply']),
+            time: temp[i]['time'],
+            upItNum: temp[i]['upItNum']
+        ));
+      }
+      print(tease_comments);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context)
+              {
+                return Show_one_tease(tease: tease,tease_comments: tease_comments);;
+              }
+          )
+      );
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     print("2================================");
@@ -320,7 +366,10 @@ class _Board extends State<Board> {
         GestureDetector(
           child: new Card(child:ListItemWidget(scroll_tease[i],i),
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0),),),),
-          onTap: (){print("详情展示");},
+          onTap: (){
+              print("展示详情");
+              get_tease_detail();
+          },
         )
       );
     }
