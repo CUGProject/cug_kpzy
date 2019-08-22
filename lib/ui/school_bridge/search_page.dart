@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_framework/style/global_config.dart';
+
 /*
 提供三个信息构建搜索框
 recommand：搜索框里面默认的一个推荐搜索文本 String
 resou_text:一系列热搜文本，List<String>
 hostories:一系列搜索历史文本 List<String>
  */
+
 void main()
 {
   runApp(new MaterialApp(home:SearchPage(hostories: ["a","hkhklhkhk","hkhkhk"],

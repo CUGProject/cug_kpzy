@@ -7,7 +7,7 @@ import 'package:notus/convert.dart';
 import 'dart:io';
 import 'package:http/http.dart' as https;
 /*
-本代码为高校对接-->发表提问代码
+本代码为高校对接-->发表评论文章的代码
 
 需要接口提供
 文章内容传递：

@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_framework/style//global_config.dart';
-import 'package:flutter_ui_framework/data_structure/listview_article_ds.dart';
+import 'package:flutter_ui_framework/data_structure/scroll_question_articles_ds.dart';
 
+void main()
+{
+  runApp(MaterialApp(home: new Follow(articleList: articleList,),));
+}
 
-//该页是热搜榜单界面
+//该页是热搜榜单界面，单纯显示包含一系列文章的滚动显示
+//只需要给定参数List<Article> articleList即可显示
 class Follow extends StatefulWidget {
-
+  List<Article> articleList;
+  Follow({this.articleList});
   @override
   _FollowState createState() => new _FollowState();
-
 }
 
 class _FollowState extends State<Follow> {
 
-  _loadArticleList()
-  {
-    /*
-    将后端数据加入articleList
-     */
-
-  }
   @override
   void initState()
   {
     super.initState();
-    _loadArticleList();
   }
   Widget build_part(Article article,int number)
   {
@@ -73,13 +70,18 @@ class _FollowState extends State<Follow> {
                          child: new Row(
                            mainAxisSize:MainAxisSize.max ,
                            children: <Widget>[
-                             new Text("热度" + "1000万",style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
+                             new Text("评论数" + article.commentNum.toString(),style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
                              new Container(
-                               width: 65,
+                               width: 30,
+                             ),
+                             new Icon(Icons.attach_money,size: 17,),
+                             new Text(article.money.toString() + "元",style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
+                             new Container(
+                               width: 30,
                              ),
                              new Container(
                                alignment: Alignment.centerRight,
-                               child:new Text("点赞数100",style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
+                               child:new Text("点赞数" + article.agreeNum.toString(),style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
                              ),
                            ],
                          ),),
@@ -93,7 +95,7 @@ class _FollowState extends State<Follow> {
                    height: 85,
                    foregroundDecoration:new BoxDecoration(
                        image: new DecorationImage(
-                         image: new NetworkImage("http://tva2.sinaimg.cn/crop.0.3.707.707.180/a2f7c645jw8f6qvlbp1g7j20js0jrgrz.jpg"),
+                         image: new NetworkImage(article.headUrl),
                          centerSlice: new Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                        ),
                        borderRadius: const BorderRadius.all(const Radius.circular(6.0))
@@ -114,10 +116,10 @@ class _FollowState extends State<Follow> {
           child: new Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              build_part(articleList[0],1),
-              build_part(articleList[1],2),
-              build_part(articleList[2],3),
-              build_part(articleList[3],4),
+              build_part(widget.articleList[0],1),
+              build_part(widget.articleList[1],2),
+              build_part(widget.articleList[2],3),
+              build_part(widget.articleList[3],4),
 
             ],
           ),

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_ui_framework/data_structure/show_one_article_ds.dart';
+import 'package:flutter_ui_framework/data_structure/one_article_ds.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
 /*
-本代码为高校对接中显示一篇文章的界面
+本代码为高校对接中显示一篇文章的界面，功能单纯为显示json文本
  */
 class ZefyrLogo extends StatelessWidget {
   @override

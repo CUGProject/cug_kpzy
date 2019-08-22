@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_framework/style/global_config.dart';
-import 'package:flutter_ui_framework/data_structure/show_one_article_ds.dart';
+import 'package:flutter_ui_framework/data_structure/one_article_ds.dart';
 import 'package:flutter_ui_framework/ui/school_bridge/show_one_article.dart';
 /*
-本界面对应的是高校对接-->提问详情
+本界面对应的是高校对接-->提问详情界面
 
 需要提供的信息是ReplyPage构造函数所有参数
 本代码为了测试，将note在ReplyPageState中通过本地json文件获取，实际获取应该在ReplyPage中从后端获取

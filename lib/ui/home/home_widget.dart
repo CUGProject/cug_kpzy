@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_framework/temp/placeHolder.dart';
-import 'package:flutter_ui_framework/ui/school_bridge/TabBar.dart';
+import 'package:flutter_ui_framework/home.dart';
 import 'school_service.dart';
 import 'package:flutter_ui_framework/ui/class_managment/Schedule.dart';
 //释放_HomerState到全局
