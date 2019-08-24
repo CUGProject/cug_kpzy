@@ -40,7 +40,7 @@ class _Show_one_tease extends State<Show_one_tease>
     return Container(
       alignment: Alignment.bottomLeft,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Row(
             children: <Widget>[
@@ -51,13 +51,14 @@ class _Show_one_tease extends State<Show_one_tease>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Container(width: MediaQuery.of(context).size.width/4*0.95,),/*
               GestureDetector(
                 child: Icon(Icons.launch),
                 onTap: (){print("转发");},
               ),
               Container(width: MediaQuery.of(context).size.width/3.7,),
               GestureDetector(
-                  child: new Icon(new IconData(0xe512,fontFamily: "PIcons"),size: sizeA,color: dzColor,),
+                  child: Center(child: new Icon(new IconData(0xe512,fontFamily: "PIcons"),size: sizeA,color: dzColor,),),
                   onTap:() async {
                     print("点赞");
                     var req = await http.post("http://www.cugkpzy.com/dian_zan/2019_08_01_21_40_13");
@@ -74,7 +75,7 @@ class _Show_one_tease extends State<Show_one_tease>
                 padding: EdgeInsets.only(top: 10),
                 child: Text(tease.upItNum.toString()),
               ),
-              Container(width: MediaQuery.of(context).size.width/30,),
+              Container(width: MediaQuery.of(context).size.width/30,),*/
             ],
           )
         ],
@@ -83,8 +84,9 @@ class _Show_one_tease extends State<Show_one_tease>
   }
 
   @override
-  Widget get_tease_content()
+  Widget get_tease_content(BuildContext context)
   {
+    fill_all_comments(context);
     return SingleChildScrollView(
       physics: new NeverScrollableScrollPhysics(),
       child:new Column(
@@ -143,6 +145,7 @@ class _Show_one_tease extends State<Show_one_tease>
      */
     List<Widget> all_replys = [];
     tease_comment.reply.forEach((k,v){
+      k = k.split('+')[0];
       all_replys.add(Row(
           children: <Widget>[
             Container(width: MediaQuery.of(context).size.width/50,),
@@ -203,7 +206,7 @@ class _Show_one_tease extends State<Show_one_tease>
     );
   }
 
-  Widget get_comment_lastline(Tease_comment_ds tease_comment)
+  Widget get_comment_lastline(BuildContext context,Tease_comment_ds tease_comment)
   {
     /*
     每个评论的最后一行，拥有点赞，评论，转发功能
@@ -221,13 +224,8 @@ class _Show_one_tease extends State<Show_one_tease>
           Text(tease_comment.upItNum.toString(),style: TextStyle(fontSize: 12),),
           Container(width: MediaQuery.of(context).size.width/22,),
           GestureDetector(
-  child: Icon(Icons.launch,size: 20,color: Colors.black54,),
-  onTap: (){print("转发");},
-  ),
-          Container(width: MediaQuery.of(context).size.width/20,),
-          GestureDetector(
   child: Icon(Icons.comment,size: 20,color: Colors.black54,),
-  onTap: (){print("评论");},
+  onTap: (){show_write_comment(context,0);},
   ),
           Container(width: MediaQuery.of(context).size.width/50,),
         ],
@@ -235,7 +233,7 @@ class _Show_one_tease extends State<Show_one_tease>
     );
   }
 
-  Widget get_comment_item(Tease_comment_ds tease_comment)
+  Widget get_comment_item(BuildContext context,Tease_comment_ds tease_comment)
   {
    /*
    根据一个Tease_comment_ds对象得到一个评论item
@@ -254,24 +252,26 @@ class _Show_one_tease extends State<Show_one_tease>
         Container(height: MediaQuery.of(context).size.width/50,),
         get_comment_all_reply(tease_comment),
         Container(height: MediaQuery.of(context).size.width/50,),
-        get_comment_lastline(tease_comment),
+        get_comment_lastline(context,tease_comment),
         Container(height: MediaQuery.of(context).size.width/50,),
         Container(height: 1,decoration: BoxDecoration(color: Color(0xAAC0C0C0)),)
       ],
     );
   }
-  void fill_all_comments()
+
+  void fill_all_comments(BuildContext context)
   {
     /*
     填充all_comments，之后作为评论展示
     这里先填充前端自定义的一些comment
      */
+    all_comments.clear();
     for(int i = 0;i < widget.tease_comments.length;i++)
-      all_comments.add(get_comment_item(widget.tease_comments[i]));
+      all_comments.add(get_comment_item(context,widget.tease_comments[i]));
   }
+
   @override
   Widget build(BuildContext context) {
-    fill_all_comments();
     // TODO: implement build
     return Scaffold(
       appBar:PreferredSize(
@@ -287,23 +287,149 @@ class _Show_one_tease extends State<Show_one_tease>
           leading: Icon(Icons.arrow_back_ios,color: Colors.white,),// hides leading widget
         ),
       ),
-      body:new RefreshIndicator(
-        child:SingleChildScrollView(
-          child: Column(
-            children:<Widget>[
-              get_tease_content(),
-              Container(height: MediaQuery.of(context).size.width/25,color: Color(0x2CC0C0C0),),
-            Container(height: MediaQuery.of(context).size.width/50,),
-              Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/50,),
-                child: Text("评论",style: TextStyle(fontSize:18,fontWeight: FontWeight.w600,
-                  shadows:<BoxShadow>[new BoxShadow(color: Colors.indigo,//阴影颜色
-                    blurRadius: 1.0,)]),),)
-            ] + all_comments
+      body:Builder(
+          builder: (BuildContext context) {
+            return new RefreshIndicator(
+              child: SingleChildScrollView(
+                child: Column(
+                    children: <Widget>[
+                      get_tease_content(context),
+                      Container(height: MediaQuery
+                          .of(context)
+                          .size
+                          .width / 25, color: Color(0x2CC0C0C0),),
+                      Container(height: MediaQuery
+                          .of(context)
+                          .size
+                          .width / 50,),
+                      Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.only(left: MediaQuery
+                            .of(context)
+                            .size
+                            .width / 50,),
+                        child: Text("评论", style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600,
+                            shadows: <BoxShadow>[
+                              new BoxShadow(color: Colors.indigo, //阴影颜色
+                                blurRadius: 1.0,)
+                            ]),),)
+                    ] + all_comments
+                ),
+              ),
+              onRefresh: () {},
+            );
+          }),
+      bottomNavigationBar: get_bottomAppBar(context),
+    );
+  }
+
+  Widget get_bottomAppBar(BuildContext context) {
+    /*
+    获得bottomAppBar的widget
+     */
+    return BottomAppBar(
+      child: new Container(
+        height: 35,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            GestureDetector(
+              child: Container(
+                child: Center(
+                  child: Text("发表评论", style: TextStyle(color: Colors.grey),),),
+                decoration: BoxDecoration(
+                    color: Color(0xAFC0C0C0),
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 3 * 2,
+                height: 25,
+              ),
+              onTap: () {
+                show_write_comment(context,1);
+              },
+            ),
+            Container(width: MediaQuery
+                .of(context)
+                .size
+                .width / 20,),
+            GestureDetector(
+    child: new Icon(new IconData(0xe512, fontFamily: "PIcons")),
+    onTap: (){print("点赞");},
+    ),
+            Container(width: MediaQuery
+                .of(context)
+                .size
+                .width / 20,),
+    GestureDetector(
+    child: Icon(Icons.launch),
+    onTap: (){print("转发");},
+    ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TextEditingController _CommentController = new TextEditingController();
+  void  show_write_comment(BuildContext context,int mark)
+  {
+    /*
+    mark 是 0 ，代表是对于评论发出评论
+    mark 是 1 ，代表是对吐槽发出的评论
+    可能在写功能是的参数不是很全，可以后面添加
+     */
+
+    NavigatorState navigator= context.rootAncestorStateOfType(const TypeMatcher<NavigatorState>());
+    debugPrint("navigator is null?"+(navigator==null).toString());
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+            //title: new Text("写评论"),
+            content: Container(
+              height: MediaQuery.of(context).size.height/5,
+              child: Column(
+                children: <Widget>[
+                  get_input_widget(context),
+                ],
+              ),
+            ),
+            actions:<Widget>[
+              new FlatButton(child:new Text("取消"), onPressed: (){
+                Navigator.of(context).pop();
+              },),
+              new FlatButton(child:new Text("发表"), onPressed: (){
+                String comment = _CommentController.text.toString();
+              },)
+            ]
+        ));
+  }
+
+  Widget get_input_widget(BuildContext context)  //滚动屏的输入框
+  {
+    return Container(
+      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/50,right:MediaQuery.of(context).size.width/50),
+      child:
+      Container(//对应输入框
+        //decoration: BoxDecoration(color: Colors.greenAccent),
+        height: MediaQuery.of(context).size.height/5,
+        width: MediaQuery.of(context).size.width,
+        child: TextField(
+          maxLength: 500,//这个属性可以实现自动换行,参数含义是输入框最多输入字符个数
+          maxLines: 5,//确定当前输入框高度
+          controller: _CommentController,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 5),
+            //border: OutlineInputBorder(),
+            //fillColor: Colors.grey,
+            hintText: " 写评论",
+            //labelText: '左上角',
+            //prefixIcon: Icon(Icons.person),
           ),
         ),
-        onRefresh: (){},
       ),
     );
   }

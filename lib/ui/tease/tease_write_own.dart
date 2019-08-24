@@ -34,6 +34,11 @@ class Board extends StatefulWidget {
 //因为ListItemWidget
 Widget getBoardFirstLine(Tease_ds tease,BuildContext context)  //显示滚动屏第一行，包头像，用户名，学院，种类
 {
+  String show_time;
+  if(tease.time.split('_').length >= 3)
+    show_time = tease.time.split('_')[0] + '-' + tease.time.split('_')[1] + '-' + tease.time.split('_')[2];
+  else
+    show_time = tease.time;
   return Container(
       height: MediaQuery.of(context).size.height/16,
       //decoration: BoxDecoration(color: Colors.blue),
@@ -55,7 +60,7 @@ Widget getBoardFirstLine(Tease_ds tease,BuildContext context)  //显示滚动屏
           Container(width: MediaQuery.of(context).size.width/50,),
           GestureDetector(
             child: Container(
-              child: Center(child: Text(tease.user+"---"+tease.userCollege+"\n"+tease.time,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),),),
+              child: Center(child: Text(tease.user+"---"+tease.userCollege+"\n"+show_time,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),),),
             ),
             onTap:(){print("个人中心公布栏点击");},
           ),
