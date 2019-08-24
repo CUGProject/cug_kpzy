@@ -11,6 +11,8 @@ import 'package:flutter_ui_framework/ui/tease/tease_filter.dart';
 import 'package:flutter_ui_framework/ui/tease/show_one_tease.dart';
 import 'package:flutter_ui_framework/ui/tease/tease_data_structure.dart';
 import 'package:flutter_ui_framework/data_structure/tease_comment_ds.dart';
+
+
 /*
 author:李静涛
 该文件对应界面吐槽池主界面
@@ -354,8 +356,8 @@ class _Board extends State<Board> {
           )
       );
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     print("2================================");

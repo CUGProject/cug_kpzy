@@ -17,10 +17,12 @@ import 'package:http/http.dart' as https;
  */
 
 void main() {
-  runApp(new MaterialApp(home: FullPageEditorScreen(),));
+  runApp(new MaterialApp(home: FullPageEditorScreen(id: "2018-9-4-23-12",),));
 }
 
 class FullPageEditorScreen extends StatefulWidget {
+  String id;//文章的id，这里我们用后端传过来的时间作为id
+  FullPageEditorScreen({this.id});
   @override
   _FullPageEditorScreenState createState() => new _FullPageEditorScreenState();
 }

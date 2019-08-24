@@ -13,11 +13,13 @@ import 'package:flutter_ui_framework/ui/school_bridge/show_one_article.dart';
  */
 void main()
 {
-  runApp(new MaterialApp(home:ReplyPage(
+  runApp(new MaterialApp(home:ReplyPage(//参数均为举例，根据后端实际传来数据为准
     title: "你认为《三体》中最牛的文明是？",
     focus_number: 4,
     reply_number: 5,
     money:5,
+    id: "2019-9-12-14-24",
+    time: "2019-9-12",
     user_name:"Flutter",
     state: "赏金尚未分配",
     user_url: "https://pic3.zhimg.com/v2-cd467bb9bb31d0384f065cf0bd677930_xl.jpg",
@@ -76,9 +78,11 @@ class ReplyPage extends StatefulWidget {
   int reply_number;//回答数目
   String user_url;//头像url
   String user_name;//用户名
+  String time;//时间
+  String id;//标识符。也是时间和time不同，time是后端传来的id时间加工形成“2019-9-23”这种形式显示的时间
   String state;//当前状态，是 赏金尚未分配还是赏金已分配
   int money;//赏金数目
-  ReplyPage({this.note,this.user_url,this.title,this.focus_number,this.user_name,this.reply_number,this.state,this.money,});
+  ReplyPage({this.note,this.user_url,this.id,this.time,this.title,this.focus_number,this.user_name,this.reply_number,this.state,this.money,});
   @override
   ReplyPageState createState() => new ReplyPageState();
 }
@@ -118,21 +122,12 @@ class ReplyPageState extends State<ReplyPage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 new Container(
-                  child: new FlatButton(
-                    onPressed: (){
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (context) {
-                            return null;
-                          }
-                      ));
-                    },
                     child: new Container(
                       child: new Text(widget.title,style: new TextStyle(fontWeight: FontWeight.w700, fontSize: 19.0, height: 1.3, color: Colors.black)),
                       padding: const EdgeInsets.all(10.0),
                       alignment: Alignment.topLeft,
                     ),
                     //color: GlobalConfig.cardBackgroundColor,
-                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(10.0),
@@ -200,7 +195,13 @@ class ReplyPageState extends State<ReplyPage> {
                           backgroundImage: new NetworkImage(widget.user_url,),
                           radius: 20.0
                       ),
-                      title: new Text(widget.user_name,),
+                      title: Row(
+                        children: <Widget>[
+                          new Text(widget.user_name,),
+                          new Container(width: MediaQuery.of(context).size.width/5*2,),
+                          new Text(widget.time,style: TextStyle(color: Colors.grey),),
+                        ],
+                      )
                       //subtitle: new Text("地大大四本科"),
                       //trailing: new RaisedButton.icon(color:Colors.white,onPressed: (){}, icon: new Icon(Icons.verified_user, color: Colors.grey), label: new Text("关注", style: new TextStyle(color: Colors.cyan),),)
                   ),
@@ -227,8 +228,8 @@ class ReplyPageState extends State<ReplyPage> {
                                 icon: new Container(
                                   child: new Column(
                                     children: <Widget>[
-                                      new Icon(Icons.star, size: 18.0, color: Colors.white,),
-                                      new Text("收藏", style: new TextStyle(fontSize: 10.0, color: Colors.white),)
+                                      new Icon(Icons.remove_red_eye, size: 18.0, color: Colors.white,),
+                                      new Text("关注", style: new TextStyle(fontSize: 10.0, color: Colors.white),)
                                     ],
                                   ),
                                   margin: const EdgeInsets.only(),
@@ -238,15 +239,27 @@ class ReplyPageState extends State<ReplyPage> {
                             new IconButton(
                                 onPressed: (){ print("icon");},
                                 icon: new Container(
-
                                   child: new Column(
                                     children: <Widget>[
-                                      new Icon(Icons.mode_comment, size: 18.0, color: Colors.white,),
-                                      new Text(widget.reply_number.toString(),style: new TextStyle(fontSize: 10.0, color: Colors.white),)
+                                      new Icon(Icons.brush, size: 18.0, color: Colors.white,),
+                                      new Text("写回答", style: new TextStyle(fontSize: 10.0, color: Colors.white),)
                                     ],
                                   ),
                                   margin: const EdgeInsets.only(),
-                                  height: 30.0,
+                                  height: 32.0,
+                                )
+                            ),
+                            new IconButton(
+                                onPressed: (){ print("icon");},
+                                icon: new Container(
+                                  child: new Column(
+                                    children: <Widget>[
+                                      new Icon(Icons.mode_comment, size: 18.0, color: Colors.white,),
+                                      new Text("看解答",style: new TextStyle(fontSize: 10.0, color: Colors.white),)
+                                    ],
+                                  ),
+                                  margin: const EdgeInsets.only(),
+                                  height: 32.0,
                                 )
                             ),
                           ],
