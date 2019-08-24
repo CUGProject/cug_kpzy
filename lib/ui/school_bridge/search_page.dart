@@ -11,7 +11,7 @@ hostories:一系列搜索历史文本 List<String>
 void main()
 {
   runApp(new MaterialApp(home:SearchPage(hostories: ["a","hkhklhkhk","hkhkhk"],
-  recommand: "如何选专业",
+  recommend: "如何选专业",
   resou_text: ["高效对接含义","专业重要还是大学所在地重要","高考意味着最后一次不看脸的斗争",
   "高考","择校","就业"],
   )));
@@ -20,8 +20,8 @@ void main()
 class SearchPage extends StatefulWidget{
   List<String> hostories;
   List<String> resou_text;
-  String recommand;
-  SearchPage({this.hostories,this.resou_text,this.recommand});
+  String recommend;
+  SearchPage({this.hostories,this.resou_text,this.recommend});
   @override
   SearchPageState createState() => new SearchPageState(hostories: hostories,resou_text: resou_text,recommand: recommand);
 }
