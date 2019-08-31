@@ -5,6 +5,7 @@ import 'package:flutter_ui_framework/utils/tap_widget_event.dart';
 import 'package:camera_utils/camera_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_ui_framework/utils/EncodeUtils.dart';
+import 'package:flutter_ui_framework/database/user_info.dart';
 
 List<Widget> widget_list = [];//存放发表时选中的图片或视频
 String kindValue = "学习";//存放kind选择值
@@ -24,6 +25,7 @@ class writeOneTease extends StatefulWidget{
 
 class _writeOneTease extends State<writeOneTease>
 {
+  int order = 1;
   var anonymityValue = false;//是否匿名，默认false
   anonyOnCheckChange(bool isChecked) {//匿名对应开关的值变化回调函数
     setState(() {
@@ -54,7 +56,7 @@ class _writeOneTease extends State<writeOneTease>
 
   //通过图片路径得到图片
   Widget _getImageFromFile(String _path) {
-    image_psths.add(_path);
+    image_psths.addAll({_path:order});
     print("增加图片路径" + _path);
     return GestureDetector(
       child:new Image.file(
@@ -85,6 +87,7 @@ class _writeOneTease extends State<writeOneTease>
     if (path != null) {
       setState(() {
         Widget widget = _getImageFromFile(path);
+        order += 1;
         widget_list[widget_list.length-1] = widget;
         widget_list.add(get_more_widget(context));
         Navigator.of(context).pop();//结束后取消对话框
@@ -97,6 +100,7 @@ class _writeOneTease extends State<writeOneTease>
     if (path != null) {
       setState(() {
         Widget widget = _getImageFromFile(path);
+        order += 1;
         widget_list[widget_list.length-1] = widget;
         widget_list.add(get_more_widget(context));
         Navigator.of(context).pop();//结束后取消对话框
@@ -159,11 +163,12 @@ class _writeOneTease extends State<writeOneTease>
     final path = isCapture
         ? await CameraUtils.captureVideo
         : await CameraUtils.pickVideo;
-    mp4_paths.add(path);
+    mp4_paths.addAll({path:order});
     Future<String> thumbPath = CameraUtils.getThumbnail(path);
     thumbPath.then((tpath)
     {
       setState(() {
+        order += 1;
         Widget widget = _getVideoWidget(tpath,path);
         widget_list[widget_list.length-1] = widget;
         widget_list.add(get_more_widget(context));
@@ -221,29 +226,54 @@ class _writeOneTease extends State<writeOneTease>
     );
   }
 
-  List<String> image_psths = [];//存储图片路径
-  List<String> mp4_paths = [];
+  Map<String,int> image_psths = {};//存储图片路径
+  Map<String,int> mp4_paths = {};
   TextEditingController _teaseController = new TextEditingController();//输入框的控制器
-  void launchPost() async
+  void launchPost()
   {
-    String url = "http://www.cugkpzy.com/send_tucao_content/117171/20171002196";
+    User user = new User();
+    user.insert_fake_data();
+    String class_name;
+    String student_number;
+    Future<List<Map>> userInfo = user.get_user_data();
+    userInfo.then((List<Map> userInfos){
+      class_name = userInfos[0]["class"];
+      student_number = userInfos[0]["studentNumber"];
+      print("class_name: $class_name");
+      print("student_number: $student_number");
+      Post(class_name, student_number);
+    });
+  }
+
+  Future<void> Post(String class_name,String studentNumber) async
+  {
+    String url = "http://www.cugkpzy.com/send_tucao_content/$class_name/$studentNumber";
     Map<String,String> json_data = {};
     json_data.addAll({"tucao_content":_teaseController.text});
     json_data.addAll({"image_and_mp4_num":image_psths.length.toString()+mp4_paths.length.toString()});
     int i=0;
-    for(;i<image_psths.length;i++)
+    List<String> image_paths = image_psths.keys.toList();
+    List<int> image_orders = image_psths.values.toList();
+    for(;i<image_paths.length;i++)
     {
-      File file = File(image_psths[i]);
+      File file = File(image_paths[i]);
+      print(image_paths[i]);
       String value = await EncodeUtil.image2Base64(file);
-      json_data.addAll({"image_"+(i+1).toString():value});
+      print(image_orders[i]);
+      json_data.addAll({"image_"+(image_orders[i]).toString():value});
     }
-    for(;i<image_psths.length+mp4_paths.length;i++)
+    i = 0;
+    List<String> video_paths = mp4_paths.keys.toList();
+    List<int> video_oders = mp4_paths.values.toList();
+    for(;i<video_paths.length;i++)
     {
-      File file = File(mp4_paths[i-image_psths.length]);
+      File file = File(video_paths[i]);
+      print(video_paths[i]);
       String value = await file.readAsBytes().then((data){
         return base64Encode(data);
       });
-      json_data.addAll({"mp4_"+(i+1).toString():value});
+      print(video_oders[i]);
+      json_data.addAll({"mp4_"+(video_oders[i]).toString():value});
     }
     json_data.addAll({"kind":kindValue});
     if(anonymityValue)

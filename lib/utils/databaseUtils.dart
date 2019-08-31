@@ -9,18 +9,31 @@ import 'package:sqflite/sqflite.dart';
 sqflite: ^1.1.0
 path_provider: ^0.4.0
  */
+
+/*
+本代码封装类DatabaseUtil提供前端数据库操作接口
+接口构造函数
+DatabaseUtil({this.database_name,this.table_name});
+ */
+
 class DatabaseUtil
 {
+  String database_name;
+  String table_name;
+  DatabaseUtil({this.database_name,this.table_name});
   Future<String> get _dbPath async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "name.db");
-
+    String path = join(documentsDirectory.path, "$database_name.db");
     return path;
   }
 
   Future<Database> get _localFile async {
     final path = await _dbPath;
-    const String create_table_sql = "CREATE TABLE user (id INTEGER PRIMARY KEY, name TEXT)";
+    String create_table_sql = "CREATE TABLE $table_name ("
+        "studentNumber TEXT PRIMARY KEY,"
+        "class TEXT,"
+        "user_name TEXT,"
+        "image_url TEXT)";
     Database database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(
@@ -59,6 +72,9 @@ class DatabaseUtil
     return list;
   }
 }
+
+
+/*
 void main() {
   runApp(new MaterialApp(home: new MyApp()));
 }
@@ -133,3 +149,4 @@ class MyApp extends StatelessWidget {
     });
   }
 }
+ */
