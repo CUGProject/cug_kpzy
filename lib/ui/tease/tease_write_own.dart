@@ -77,28 +77,89 @@ Widget getBoardFirstLine(Tease_ds tease,BuildContext context)  //显示滚动屏
 
 
 class _Board extends State<Board> {
-  var get_teases = new List<Tease>();
+  ScrollController _scrollController = new ScrollController();
+  bool isPerformingRequest = false;
+
+  @override
+  initState() {
+    super.initState();
+    print("1");
+    _getInfo(0);
+    //_getGreatTease();
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent)
+        if(!isPerformingRequest)
+          {
+            setState(() {
+              isPerformingRequest = true;
+              //scroll_tease.add(_buildProgressIndicator());
+              //print("after add ProgressIndicator,scroll tease length: "+ scroll_tease.length.toString());
+            });
+            _getInfo(1);
+          }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
   //initState调用，在build之前将服务器获取的吐槽加载进scroll_tease显示
-  _getInfo()
+  _getInfo(int mark)
   {
+    /*
+    上拉加载更多和下拉刷新调用的请求函数
+    param@mark 0代表下拉刷新，1代表上拉加载
+     */
     API.getTease().then((response)
     {
       print(response.body.toString());
+      print("before scroll_tease_length: " + scroll_tease.length.toString());
       Map list =  json.decode(response.body);
       //print(list["tucao_module_list"]);
       int tease_number = list["tucao_number"];
+      List<Tease_ds> temp_teases = [];
       for(int i = 0;i < tease_number;i++)
       {
         Tease tease =  new Tease.fromJson(list["tucao_module_list"][i]);
-        print("--------------");
+        print("new tease--------------");
         //print(tease.commentNum );
-        Tease_ds tease_ds = new Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,
+        Tease_ds tease_ds = new Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,widget_mark:tease.widget_mark,widget_set_2: tease.widget_set_2,
             kind:tease.kind,time:tease.time,content_title:tease.content_title,great_comment:tease.great_comment,upItNum: tease.upItNum,commentNum: tease.commentNum,
             widget_set2: tease.widget_set);
-        scroll_tease.add(tease_ds);
+        print(tease_ds);
+        if(mark == 0)
+          scroll_tease.insert(0, tease_ds);
+        else
+          temp_teases.add(tease_ds);
       }
-      setState(() {
-      });
+      if(mark == 0)
+        setState(() {
+          print("after scroll_tease_length: " + scroll_tease.length.toString());
+          print("下拉刷新-----------------------------------------------");
+        });
+      else
+        {
+          if(temp_teases.length == 0)
+            {
+              double edge = 50.0;
+              double offsetFromBottom = _scrollController.position.maxScrollExtent - _scrollController.position.pixels;
+              if (offsetFromBottom < edge) {
+                _scrollController.animateTo(
+                    _scrollController.offset - (edge -offsetFromBottom),
+                    duration: new Duration(milliseconds: 500),
+                    curve: Curves.easeOut);
+              }
+            }
+          setState(() {
+            //scroll_tease.removeLast();
+            scroll_tease = scroll_tease + temp_teases;
+            isPerformingRequest = false;
+            print("上拉加载更多-------------------------------------------");
+          });
+        }
     });
   }
 
@@ -117,7 +178,7 @@ class _Board extends State<Board> {
           {
             Tease tease = new Tease.fromJson(req_map["tucao_module_list"][i]);
             print("第"+i.toString()+"个数据："+tease.toString());
-            great_tease.add(Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,
+            great_tease.add(Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,widget_mark: tease.widget_mark,
                 kind:tease.kind,time:tease.time,content_title:tease.content_title,great_comment:tease.great_comment,upItNum: tease.upItNum,commentNum: tease.commentNum,
                 widget_set2: tease.widget_set));
           }
@@ -128,14 +189,6 @@ class _Board extends State<Board> {
         }
     );
   }
-  @override
-  initState() {
-    super.initState();
-    print("1");
-    _getInfo();
-    _getGreatTease();
-  }
-
   List<Tease_ds> great_tease = teaseList;
   Widget barSearch() {//顶部appbar的搜索框
     return new Container(
@@ -315,8 +368,8 @@ class _Board extends State<Board> {
   }
   List<Widget> all_page_set = [];//List里面放的是所有吐槽滚动屏片段
   Future<Null> _handleRefresh() async {//下拉刷新回调函数
-    await Future.delayed(Duration(seconds: 5), () {
-      _getInfo();
+    await Future.delayed(Duration(seconds: 1), () {
+      _getInfo(0);
     });
   }
 
@@ -363,15 +416,32 @@ class _Board extends State<Board> {
     });
   }
 
+  Widget _buildProgressIndicator()
+  {
+    /*
+    显示正在加载标志
+     */
+    return new Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: new Center(
+          child: new Opacity(
+              opacity:isPerformingRequest ? 1.0:0.0,
+              child:new CircularProgressIndicator(),
+          ),
+        ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     print("2================================");
     all_page_set.clear();
     for(int i = 0; i < scroll_tease.length;i++)
     {
+      print("real after scroll_tease length: "+ scroll_tease.length.toString());
+      print(scroll_tease[0].upItNum.toString());
       all_page_set.add(
         GestureDetector(
-          child: new Card(child:ListItemWidget(scroll_tease[i],i),
+          child: new Card(child:get_one_scroll_tease(context,scroll_tease[i]),
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0),),),),
           onTap: (){
               print("展示详情");
@@ -380,6 +450,8 @@ class _Board extends State<Board> {
         )
       );
     }
+    if(isPerformingRequest)
+      all_page_set.add(_buildProgressIndicator());
     var size = MediaQuery.of(context).size;
     // TODO: implement build
     return Scaffold(
@@ -393,6 +465,7 @@ class _Board extends State<Board> {
       ),
       body:new RefreshIndicator(
         child:SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             children:<Widget>[//公告栏加滚动屏
               BoardView(),
@@ -404,24 +477,9 @@ class _Board extends State<Board> {
       ),
     );
   }
-}
-
-//滚动屏的吐槽widget
-class ListItemWidget extends StatefulWidget
-{
-  Tease_ds tease;
-  int tease_index;
-  ListItemWidget(this.tease,this.tease_index);
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return  _ListItemWidget(tease,tease_index);
-  }
-}
-
-class _ListItemWidget extends State<ListItemWidget>{
-  Tease_ds tease;
-  int tease_index;
+  /*
+  ===============================================下面显示单个吐槽=========================================================
+   */
   Color dzColor = Colors.orange;
   TextEditingController comment_input_filed_controller;
   Widget build_one_great_comment_widget(String username,String comment,BuildContext context) //get_great_comment_widget调用的函数，显示单个评论
@@ -550,9 +608,7 @@ class _ListItemWidget extends State<ListItemWidget>{
     var req = await http.post("http://www.cugkpzy.com/send_tucao_comment/117171/20171002196/2019_08_01_21_40_13",body:user_info);
     print(req.body);
   }
-  _ListItemWidget(this.tease,this.tease_index);
-  @override
-  Widget build(BuildContext context) {//setHeight(context);
+  Widget get_one_scroll_tease(BuildContext context,Tease_ds tease) {//setHeight(context);
     // TODO: implement build
     return SingleChildScrollView(
       physics: new NeverScrollableScrollPhysics(),
