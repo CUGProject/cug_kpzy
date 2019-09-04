@@ -123,7 +123,7 @@ class _Show_one_tease extends State<Show_one_tease>
                           MaterialPageRoute(
                               builder: (BuildContext context)
                               {
-                                return ImageVideoView(widget.tease.widget_set,index);
+                                return ImageVideoView(widget.tease.widget_set,index,widget.tease);
                               }
                           )
                       );},

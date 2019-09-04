@@ -290,7 +290,7 @@ class _Board extends State<Board> {
                     MaterialPageRoute(
                         builder: (BuildContext context)
                         {
-                          return ImageVideoView(tease.widget_set,0);
+                          return ImageVideoView(tease.widget_set,0,tease);
                         }
                     )
                 );},
@@ -657,7 +657,8 @@ class _Board extends State<Board> {
                         MaterialPageRoute(
                             builder: (BuildContext context)
                             {
-                              return ImageVideoView(tease.widget_set,index);
+                              print("ImageVideoView index: " + index.toString());
+                              return ImageVideoView(tease.widget_set,index,tease);
                             }
                         )
                     );},

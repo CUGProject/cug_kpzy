@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter_ijkplayer/flutter_ijkplayer.dart';
 import 'package:flutter_ui_framework/utils/tap_widget_event.dart';
 import 'package:camera_utils/camera_utils.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,7 @@ class writeOneTease extends StatefulWidget{
 class _writeOneTease extends State<writeOneTease>
 {
   int order = 1;
+  IjkMediaController jk_controller = IjkMediaController();
   var anonymityValue = false;//是否匿名，默认false
   anonyOnCheckChange(bool isChecked) {//匿名对应开关的值变化回调函数
     setState(() {
@@ -33,6 +35,24 @@ class _writeOneTease extends State<writeOneTease>
     });
   }
 
+  @override
+  void dispose() {
+    jk_controller?.dispose();
+  }
+  void showIJKDialog(url) async {
+    await jk_controller.setFileDataSource(File(url));
+    await jk_controller.play();
+    await showDialog(
+      context: context,
+      builder: (_) => _buildIJKPlayer(),
+    );
+    jk_controller.pause();
+  }
+  _buildIJKPlayer() {
+    return IjkPlayer(
+      mediaController: jk_controller,
+    );
+  }
   Widget get_more_widget(BuildContext context)//一个+的widget
   {
     return GestureDetector(
@@ -143,15 +163,9 @@ class _writeOneTease extends State<writeOneTease>
       )
           : new Container(),
       onTap: (){
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context)
-                {
-                  return Magnify_video(path);
-                }
-            )
-        );
+        print("--------------------thumbPah-----------------------------------------------");
+        print(path);
+        showIJKDialog(path);
       },
     ),
     );
