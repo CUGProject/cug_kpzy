@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ui_framework/ui/tease/tease_data_structure.dart';
 import 'package:flutter_ui_framework/ui/tease/tease_write_own.dart';
 import 'package:flutter_ui_framework/utils/ImageVidwoView.dart';
+import 'package:flutter_ui_framework/database/user_info.dart';
 import 'package:http/http.dart' as http;
 import 'tease_data_structure.dart';
+import 'dart:convert';
 import 'package:flutter_ui_framework/data_structure/tease_comment_ds.dart';
 
 /*
@@ -14,11 +16,13 @@ import 'package:flutter_ui_framework/data_structure/tease_comment_ds.dart';
  */
 
 
+/*
 void main()
 {
   runApp(MaterialApp(home: Show_one_tease(tease: scroll_tease[0],tease_comments: [tease_comment_example],),));
 }
 
+ */
 class Show_one_tease extends StatefulWidget{
   Tease_ds tease;
   List<Tease_comment_ds> tease_comments;
@@ -32,7 +36,9 @@ class Show_one_tease extends StatefulWidget{
 
 class _Show_one_tease extends State<Show_one_tease>
 {
-  Color dzColor = Colors.orange;
+  Color comment_dzColor = Colors.black54;
+  Color tease_dzColor = Colors.black54;
+  List<Tease_comment_ds> tease_comments2 = List();
   List<Widget> all_comments = [];//存放所有吐槽的item，作为column的children一部分
   Widget board_last_line_left(Tease_ds tease,BuildContext context,double sizeA,double sizeB)
   //该行用于显示滚动屏两个图标，点赞和评论
@@ -191,7 +197,7 @@ class _Show_one_tease extends State<Show_one_tease>
             Container(width: MediaQuery.of(context).size.width/50,),
             GestureDetector(
               child: Container(
-                child: Center(child: Text(tease_comment_example.user_name+"---"+tease_comment_example.college,style: TextStyle(fontSize: 14,
+                child: Center(child: Text(tease_comment.user_name+"---"+tease_comment.college,style: TextStyle(fontSize: 14,
                     color: Colors.cyan),),),
               ),
               onTap:(){print("个人中心公布栏点击");},
@@ -199,7 +205,7 @@ class _Show_one_tease extends State<Show_one_tease>
             Container( width: MediaQuery.of(context).size.width/3.4,
             ),
             Container(
-              child: Center(child: Text(tease_comment_example.time,style: TextStyle(fontSize: 14,color: Colors.grey),),),
+              child: Center(child: Text(tease_comment.time.split('_')[1]+'-'+tease_comment.time.split('_')[2],style: TextStyle(fontSize: 14,color: Colors.grey),),),
             )
           ],
         )
@@ -218,19 +224,55 @@ class _Show_one_tease extends State<Show_one_tease>
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           GestureDetector(
-          child: new Icon(new IconData(0xe512,fontFamily: "PIcons",),color: Colors.black54,size:20 ,),
-            onTap: (){print("点赞");},
+          child: new Icon(new IconData(0xe512,fontFamily: "PIcons",),color: tease_comment.comment_dz_color,size:20 ,),
+            onTap: (){
+            dianZan(1,tease_comment);
+            },
       ),
           Text(tease_comment.upItNum.toString(),style: TextStyle(fontSize: 12),),
           Container(width: MediaQuery.of(context).size.width/22,),
           GestureDetector(
   child: Icon(Icons.comment,size: 20,color: Colors.black54,),
-  onTap: (){show_write_comment(context,0);},
+  onTap: (){show_write_comment(context,0,tease_comment);},
   ),
           Container(width: MediaQuery.of(context).size.width/50,),
         ],
       ),
     );
+  }
+
+  void dianZan(int mark,Tease_comment_ds tease_comment) async
+  {
+    /*
+    0 吐槽的点赞
+    1 吐槽评论的点赞
+     */
+    if(mark == 0)
+      {
+        print("点赞");
+        var req = await http.post("http://www.cugkpzy.com/dian_zan/" + widget.tease.time);
+        print("点赞url:" + "http://www.cugkpzy.com/dian_zan/" + widget.tease.time);
+        //print("tease_ds索引："+teast_index.toString());
+        print("点赞数："+req.body);
+        setState(() {
+          widget.tease.upItNum = int.parse(req.body);
+          tease_dzColor = Colors.orangeAccent;
+        });
+      }else
+        {
+          String tease_id = widget.tease.time;
+          String comment_id = tease_comment.time;
+          String url = "http://www.cugkpzy.com/dian_zan_comment/"
+              "$tease_id/$comment_id";
+          print("评论点赞url");
+          print(url);
+          var req = await http.post(url);
+          setState(() {
+            tease_comment.upItNum = int.parse(req.body);
+            print(req.body);
+            tease_comment.comment_dz_color = Colors.orangeAccent;
+          });
+        }
   }
 
   Widget get_comment_item(BuildContext context,Tease_comment_ds tease_comment)
@@ -247,7 +289,7 @@ class _Show_one_tease extends State<Show_one_tease>
           //tease显示的文字内容
           padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/50,right: MediaQuery.of(context).size.width/50,),
           alignment: Alignment.bottomLeft,
-          child: Text(tease_comment_example.comment_text,style: TextStyle(fontSize: 15)),
+          child: Text(tease_comment.comment_text,style: TextStyle(fontSize: 15)),
         ),
         Container(height: MediaQuery.of(context).size.width/50,),
         get_comment_all_reply(tease_comment),
@@ -267,7 +309,10 @@ class _Show_one_tease extends State<Show_one_tease>
      */
     all_comments.clear();
     for(int i = 0;i < widget.tease_comments.length;i++)
-      all_comments.add(get_comment_item(context,widget.tease_comments[i]));
+    {
+      print(widget.tease_comments[i]);
+      all_comments.add(get_comment_item(context, widget.tease_comments[i]));
+    }
   }
 
   @override
@@ -317,11 +362,18 @@ class _Show_one_tease extends State<Show_one_tease>
                     ] + all_comments
                 ),
               ),
-              onRefresh: () {},
+              onRefresh: _handleRefresh,
             );
           }),
       bottomNavigationBar: get_bottomAppBar(context),
     );
+  }
+
+  Future<void> _handleRefresh() async {//下拉刷新回调函数
+    await Future.delayed(Duration(seconds: 1), () {
+      print("下拉刷新");
+      updateArea(1);
+    });
   }
 
   Widget get_bottomAppBar(BuildContext context) {
@@ -348,7 +400,7 @@ class _Show_one_tease extends State<Show_one_tease>
                 height: 25,
               ),
               onTap: () {
-                show_write_comment(context,1);
+                show_write_comment(context,1,null);
               },
             ),
             Container(width: MediaQuery
@@ -356,9 +408,11 @@ class _Show_one_tease extends State<Show_one_tease>
                 .size
                 .width / 20,),
             GestureDetector(
-    child: new Icon(new IconData(0xe512, fontFamily: "PIcons")),
-    onTap: (){print("点赞");},
+    child: new Icon(new IconData(0xe512, fontFamily: "PIcons"),color: tease_dzColor,),
+    onTap: (){
+      dianZan(0,null);},
     ),
+            Text(widget.tease.upItNum.toString(),),
             Container(width: MediaQuery
                 .of(context)
                 .size
@@ -374,14 +428,18 @@ class _Show_one_tease extends State<Show_one_tease>
   }
 
   TextEditingController _CommentController = new TextEditingController();
-  void  show_write_comment(BuildContext context,int mark)
+  String user_name;
+  String class_name;
+  String student_number;
+
+  void  show_write_comment(BuildContext context,int mark,Tease_comment_ds comment)
   {
     /*
     mark 是 0 ，代表是对于评论发出评论
     mark 是 1 ，代表是对吐槽发出的评论
     可能在写功能是的参数不是很全，可以后面添加
      */
-
+    _CommentController.clear();
     NavigatorState navigator= context.rootAncestorStateOfType(const TypeMatcher<NavigatorState>());
     debugPrint("navigator is null?"+(navigator==null).toString());
     showDialog(
@@ -401,10 +459,54 @@ class _Show_one_tease extends State<Show_one_tease>
                 Navigator.of(context).pop();
               },),
               new FlatButton(child:new Text("发表"), onPressed: (){
-                String comment = _CommentController.text.toString();
-              },)
+              User user = new User();
+              Future<List<Map>> userInfo = user.get_user_data();
+              userInfo.then((List<Map> userInfos){
+                user_name = userInfos[0]["user_name"];
+                class_name = userInfos[0]["class"];
+                student_number = userInfos[0]["studentNumber"];
+                if(mark == 1)
+                  postComment(0,null);
+                else
+                  postComment(1,comment);
+                Navigator.of(context).pop();
+              });}
+  ),
             ]
         ));
+  }
+
+  void  postComment(int mark,Tease_comment_ds one_comment) async
+  {
+    /*
+    0 代表是吐槽的评论
+    1 代表是吐槽评论的评论
+     */
+    if(mark == 0)
+      {
+        String tease_id = widget.tease.time;
+        Map<String,String> user_info = {};
+        String comment = _CommentController.text.toString();
+        user_info.addAll({"comment_content":comment});
+        print("http://www.cugkpzy.com/send_tucao_comment/$class_name/$student_number/$tease_id");
+        var req = await http.post("http://www.cugkpzy.com/send_tucao_comment/$class_name/$student_number/$tease_id",body:user_info);
+        print(req.body);
+        print("评论成功");
+        updateArea(0);
+      }else
+        {
+          String tease_id = widget.tease.time;
+          String comment_id = one_comment.time;
+          Map<String,String> user_info = {};
+          String comment = _CommentController.text.toString();
+          user_info.addAll({"comment_content":comment});
+          user_info.addAll({"class_name":class_name});
+          user_info.addAll({"name":student_number});
+          var req = await http.post("http://www.cugkpzy.com/send_tucao_comment_of_comment/$tease_id/$comment_id",body:user_info);
+          print(req.body);
+          print("评论成功");
+          updateArea(0);
+        }
   }
 
   Widget get_input_widget(BuildContext context)  //滚动屏的输入框
@@ -432,6 +534,58 @@ class _Show_one_tease extends State<Show_one_tease>
         ),
       ),
     );
+  }
+
+  void updateArea(int mark) {
+    /*
+    0 更新评论
+    1 更新全部
+     */
+    String tease_id = widget.tease.time;
+    tease_comments2.clear();
+    http.post("http://www.cugkpzy.com/show_tucao_module_xiangqing/$tease_id")
+        .then((req) {
+      Map<String, dynamic> reqmap = json.decode(req.body);
+      Tease_ds tease = Tease_ds(
+          headUrl: reqmap['tease']['headUrl'],
+          user: reqmap['tease']['user'],
+          userCollege: reqmap['tease']['userCollege'],
+          kind: reqmap['tease']['kind'],
+          time: reqmap['tease']['time'],
+          widget_mark: reqmap['tease']['widget_mark'].cast<int>(),
+          widget_set_2: reqmap['tease']['widget_set_2'].cast<String>(),
+          content_title: reqmap['tease']['content_title'],
+          great_comment: Map<String, String>(),
+          upItNum: reqmap['tease']['upItNum'],
+          commentNum: reqmap['tease']['commentNum'],
+          widget_set2: List<String>.from(reqmap['tease']['widget_set'])
+      );
+      List<dynamic> temp = reqmap['tease_comments'];
+      for (int i = 0; i < temp.length; i++) {
+        //Tease_comment_ds({this.head_url,this.user_name,this.college,this.comment_text,this.reply,this.time,this.upItNum});
+        tease_comments2.add(Tease_comment_ds(
+            head_url: temp[i]['head_url'],
+            user_name: temp[i]['user_name'],
+            college: temp[i]['college'],
+            comment_text: temp[i]['comment_text'],
+            reply: Map<String, String>.from(temp[i]['reply']),
+            time: temp[i]['time'],
+            upItNum: temp[i]['upItNum']
+        ));
+      }
+      setState(() {
+        print("更新评论");
+        print(tease_comments2);
+        if(mark == 0)
+          widget.tease_comments = tease_comments2;
+        else
+          {
+            print("更新全部");
+            widget.tease_comments = tease_comments2;
+            widget.tease = tease;
+          }
+      });
+    });
   }
 }
 

@@ -17,14 +17,15 @@ class User
   DatabaseUtil dbhelper;
   User()
   {
-    dbhelper = new DatabaseUtil(database_name: "kpzy_user",table_name: "user");
+    dbhelper = new DatabaseUtil(database_name: "kpzyUser",table_name: "User");
+    insert_fake_data();
   }
   Future<void> insert_fake_data() async {
-    String sql =  'INSERT INTO user VALUES("20171003196","117173","Unrivaled","http://tva2.sinaimg.cn/crop.0.3.707.707.180/a2f7c645jw8f6qvlbp1g7j20js0jrgrz.jpg")';
+    String sql =  'INSERT INTO User VALUES("20171002196","117171","Unrivaled","http://tva2.sinaimg.cn/crop.0.3.707.707.180/a2f7c645jw8f6qvlbp1g7j20js0jrgrz.jpg")';
     dbhelper.insert(sql);
   }
   Future<List<Map>> get_user_data() async{
-    String sql = 'SELECT * FROM user';
+    String sql = 'SELECT * FROM User';
     Future<List<Map>> userInfo = dbhelper.query(sql);
     return userInfo;
   }

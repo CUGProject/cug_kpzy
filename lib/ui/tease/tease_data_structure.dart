@@ -15,9 +15,9 @@ class Tease_ds
   String time;//吐槽时间
   List<int> widget_mark;//一个包含0、1的list，代表是图片还是视频
   String content_title;//吐槽内容,后期如果内容过多，可以只显示前几行或者标题
-  Map<String,String> great_comment; //精彩评论
-  List<String> widget_set2;//吐槽内容,支持多种widget的url
-  List<Widget> widget_set;//存放widget
+  Map<String,String> great_comment;//精彩评论
+  List<String> widget_set2;//存放widget,全部是图片的url,视频取第一帧
+  List<Widget> widget_set;//存放widget的url，包括视频和图片
   List<String> widget_set_2;//保存有视频video的url
   int  upItNum;//点赞数
   int commentNum;//评论数

@@ -6,6 +6,7 @@ import  'package:flutter_ui_framework/utils/tap_widget_event.dart';
 import 'package:flutter_ui_framework/utils/ImageVidwoView.dart';
 import  'dart:io';
 import 'dart:convert';
+import 'package:flutter_ui_framework/database/user_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_ui_framework/ui/tease/tease_filter.dart';
 import 'package:flutter_ui_framework/ui/tease/show_one_tease.dart';
@@ -369,13 +370,15 @@ class _Board extends State<Board> {
   List<Widget> all_page_set = [];//List里面放的是所有吐槽滚动屏片段
   Future<Null> _handleRefresh() async {//下拉刷新回调函数
     await Future.delayed(Duration(seconds: 1), () {
+      print("下拉刷新");
       _getInfo(0);
     });
   }
 
-  get_tease_detail() async
+  get_tease_detail(Tease_ds tease) async
   {
-    http.post("http://www.cugkpzy.com/show_tucao_module_xiangqing/2019_08_21_01_04_06").then((req){
+    String tease_id = tease.time;
+    http.post("http://www.cugkpzy.com/show_tucao_module_xiangqing/$tease_id").then((req){
       Map<String,dynamic> reqmap = json.decode(req.body);
       Tease_ds tease = Tease_ds(
           headUrl: reqmap['tease']['headUrl'],
@@ -383,6 +386,8 @@ class _Board extends State<Board> {
           userCollege: reqmap['tease']['userCollege'],
           kind:reqmap['tease']['kind'],
           time: reqmap['tease']['time'],
+          widget_mark: reqmap['tease']['widget_mark'].cast<int>(),
+          widget_set_2: reqmap['tease']['widget_set_2'].cast<String>(),
           content_title: reqmap['tease']['content_title'],
           great_comment:Map<String,String>(),
           upItNum: reqmap['tease']['upItNum'],
@@ -445,7 +450,7 @@ class _Board extends State<Board> {
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0),),),),
           onTap: (){
               print("展示详情");
-              get_tease_detail();
+              get_tease_detail(scroll_tease[i]);
           },
         )
       );
@@ -480,7 +485,7 @@ class _Board extends State<Board> {
   /*
   ===============================================下面显示单个吐槽=========================================================
    */
-  Color dzColor = Colors.orange;
+  Color dzColor = Colors.redAccent;
   TextEditingController comment_input_filed_controller;
   Widget build_one_great_comment_widget(String username,String comment,BuildContext context) //get_great_comment_widget调用的函数，显示单个评论
   {
@@ -491,7 +496,7 @@ class _Board extends State<Board> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text(username + ": ",style: TextStyle(fontSize: 15,fontWeight: FontWeight.w700),),
+          Text(username.split('+')[0] + ": ",style: TextStyle(fontSize: 15,fontWeight: FontWeight.w700),),
           Text(comment,style: TextStyle(fontSize: 15.0),maxLines: ((username.length + comment.length)/24 + 1).toInt(),),
         ],
       ),
@@ -526,33 +531,7 @@ class _Board extends State<Board> {
       children: widget,
     );
   }
-  Widget get_input_widget(BuildContext context,Tease_ds tease)  //滚动屏的输入框
-  {
-    comment_input_filed_controller = _userNameController;
-    return Container(
-      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/50,right:MediaQuery.of(context).size.width/50),
-      child:
-      Container(//对应输入框
-        //decoration: BoxDecoration(color: Colors.greenAccent),
-        height: MediaQuery.of(context).size.height/5,
-        width: MediaQuery.of(context).size.width,
-        child: TextField(
-          maxLength: 500,//这个属性可以实现自动换行,参数含义是输入框最多输入字符个数
-          maxLines: 5,//确定当前输入框高度
-          controller: _userNameController,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 5),
-            //border: OutlineInputBorder(),
-            //fillColor: Colors.grey,
-            hintText: " 开始写我牛逼的评论",
-            //labelText: '左上角',
-            //prefixIcon: Icon(Icons.person),
-          ),
-        ),
-      ),
-    );
-  }
+
   Widget board_last_line_left(Tease_ds tease,BuildContext context,double sizeA,double sizeB) //该行用于显示滚动屏两个图标，点赞和评论
   {
     return Container(
@@ -578,12 +557,13 @@ class _Board extends State<Board> {
                   child: new Icon(new IconData(0xe512,fontFamily: "PIcons"),size: sizeA,color: dzColor,),
                   onTap:() async {
                     print("点赞");
-                    var req = await http.post("http://www.cugkpzy.com/dian_zan/2019_08_01_21_40_13");
+                    var req = await http.post("http://www.cugkpzy.com/dian_zan/" + tease.time);
+                    print("点赞url:" + "http://www.cugkpzy.com/dian_zan/" + tease.time);
                     //print("tease_ds索引："+teast_index.toString());
                     print("点赞数："+req.body);
                     setState(() {
                       tease.upItNum = int.parse(req.body);
-                      dzColor = Colors.red;
+                      dzColor = Colors.orangeAccent;
                     });
                   }
               ),
@@ -598,15 +578,6 @@ class _Board extends State<Board> {
         ],
       ),
     );
-  }
-  void tap_comment(String comment)async
-  {
-    //comment = "1233211234567";
-    Map<String,String> user_info = {};
-    print(comment);
-    user_info.addAll({"comment_content":comment});
-    var req = await http.post("http://www.cugkpzy.com/send_tucao_comment/117171/20171002196/2019_08_01_21_40_13",body:user_info);
-    print(req.body);
   }
   Widget get_one_scroll_tease(BuildContext context,Tease_ds tease) {//setHeight(context);
     // TODO: implement build
@@ -677,41 +648,7 @@ class _Board extends State<Board> {
           Container(height: MediaQuery.of(context).size.height/50*0.8,),
           get_great_comment_widget(tease,context),//显示精彩评论
           Container(height: MediaQuery.of(context).size.height/50*0.7,),
-          GestureDetector(
-              child: Container(
-                height: 30,
-                width: MediaQuery.of(context).size.width,
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(color: Color(0x3AC0C0C0),borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Text(" 发表我牛逼的评论",style: TextStyle(fontSize: 17,color: Colors.grey),),
-              ),
-              onTap: () {
-                showBottomSheet(
-                    context: context,
-                    builder: (context) =>
-                        Container(
-                          height: MediaQuery.of(context).size.height*1/4*1.2,
-                          child: Column(
-                            children: <Widget>[
-                              get_input_widget(context,tease),
-                              Container(height: MediaQuery.of(context).size.width/50,),
-                              Container(
-                                width: MediaQuery.of(context).size.width/5,
-                                height: MediaQuery.of(context).size.width/13,
-                                decoration: BoxDecoration(color: Colors.blue),
-                                child: Center(child:
-                                FlatButton(onPressed: ()
-                                {
-                                  //发表评论
-                                  String comment = _userNameController.text.toString();
-                                  tap_comment(comment);
-                                },
-                                  child: Text("发表",style: TextStyle(fontSize: 16,color: Colors.black),),color: Colors.blue,),),
-                              )
-                            ],
-                          ),
-                        ));
-              }),
+          new Write_comment_widget(tease: tease,),
           //get_input_widget(context,tease),//提供输入款
           Container(height: MediaQuery.of(context).size.width/50,),
           Container(
@@ -719,6 +656,137 @@ class _Board extends State<Board> {
           )
         ],
       ),
+    );
+  }
+}
+
+class Write_comment_widget extends StatefulWidget
+{
+  Tease_ds tease;
+  Write_comment_widget({this.tease});
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _Write_comment_widget();
+  }
+}
+
+class _Write_comment_widget extends State<Write_comment_widget>
+{
+  String class_name;
+  String student_number;
+  String user_name;
+
+  void tap_comment(String comment,BuildContext context)async
+  {
+    User user = new User();
+    Future<List<Map>> userInfo = user.get_user_data();
+    userInfo.then((List<Map> userInfos){
+      class_name = userInfos[0]["class"];
+      student_number = userInfos[0]["studentNumber"];
+      user_name = userInfos[0]["user_name"];
+      print("class_name: $class_name");
+      print("student_number: $student_number");
+      Map<String,String> user_info = {};
+      print(comment);
+      user_info.addAll({"comment_content":comment});
+      post_comment(user_info, class_name, student_number, context);
+    });
+  }
+
+  Future<void> post_comment(Map<String,String> user_info,String class_name,String student_number,BuildContext context) async
+  {
+    String tease_id = widget.tease.time;
+    print("http://www.cugkpzy.com/send_tucao_comment/$class_name/$student_number/$tease_id");
+    var req = await http.post("http://www.cugkpzy.com/send_tucao_comment/$class_name/$student_number/$tease_id",body:user_info);
+    print(req.body);
+    Navigator.of(context).pop();
+    final snackBar = new SnackBar(content: new Text('评论成功!'));
+    if(widget.tease.great_comment.length >= 3)
+      {
+        setState(() {
+          widget.tease.commentNum += 1;
+        });
+      }
+    else
+      {
+        setState(() {
+          widget.tease.great_comment.addAll({user_name:user_info["comment_content"]});
+          widget.tease.commentNum += 1;
+        });
+      }
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  Widget get_input_widget(BuildContext context)  //滚动屏的输入框
+  {
+    TextEditingController comment_input_filed_controller = _userNameController;
+    return Container(
+      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/50,right:MediaQuery.of(context).size.width/50),
+      child:
+      Container(//对应输入框
+        //decoration: BoxDecoration(color: Colors.greenAccent),
+        height: MediaQuery.of(context).size.height/5,
+        width: MediaQuery.of(context).size.width,
+        child: TextField(
+          maxLength: 500,//这个属性可以实现自动换行,参数含义是输入框最多输入字符个数
+          maxLines: 5,//确定当前输入框高度
+          controller: _userNameController,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 5),
+            //border: OutlineInputBorder(),
+            //fillColor: Colors.grey,
+            hintText: " 开始写我牛逼的评论",
+            //labelText: '左上角',
+            //prefixIcon: Icon(Icons.person),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      child: Scaffold(
+        body: GestureDetector(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              alignment: Alignment.centerLeft,
+              decoration: BoxDecoration(color: Color(0x3AC0C0C0),borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Text(" 发表我牛逼的评论",style: TextStyle(fontSize: 17,color: Colors.grey),),
+            ),
+            onTap: () {
+              showBottomSheet(
+                  context: context,
+                  builder: (context) =>
+                      Container(
+                        height: MediaQuery.of(context).size.height*1/4*1.2,
+                        child: Column(
+                          children: <Widget>[
+                            get_input_widget(context),
+                            Container(height: MediaQuery.of(context).size.width/50,),
+                            Container(
+                              width: MediaQuery.of(context).size.width/5,
+                              height: MediaQuery.of(context).size.width/13,
+                              decoration: BoxDecoration(color: Colors.blue),
+                              child: Center(child:
+                              FlatButton(onPressed: ()
+                              {
+                                //发表评论
+                                String comment = _userNameController.text.toString();
+                                tap_comment(comment,context);
+                              },
+                                child: Text("发表",style: TextStyle(fontSize: 16,color: Colors.black),),color: Colors.blue,),),
+                            )
+                          ],
+                        ),
+                      ));
+            }),
+      ),
+      height: 30,
     );
   }
 }
