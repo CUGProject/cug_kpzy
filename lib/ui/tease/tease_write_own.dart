@@ -12,7 +12,7 @@ import 'package:flutter_ui_framework/ui/tease/tease_filter.dart';
 import 'package:flutter_ui_framework/ui/tease/show_one_tease.dart';
 import 'package:flutter_ui_framework/ui/tease/tease_data_structure.dart';
 import 'package:flutter_ui_framework/data_structure/tease_comment_ds.dart';
-
+import 'package:flutter_ui_framework/ui/tease/write_one_tease.dart';
 
 /*
 author:李静涛
@@ -86,7 +86,7 @@ class _Board extends State<Board> {
     super.initState();
     print("1");
     _getInfo(0);
-    //_getGreatTease();
+    _getGreatTease();
     _scrollController.addListener((){
       if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent)
         if(!isPerformingRequest)
@@ -179,9 +179,10 @@ class _Board extends State<Board> {
           {
             Tease tease = new Tease.fromJson(req_map["tucao_module_list"][i]);
             print("第"+i.toString()+"个数据："+tease.toString());
-            great_tease.add(Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,widget_mark: tease.widget_mark,
+            Tease_ds tease_ds = new Tease_ds(headUrl:tease.headUrl,user:tease.user,userCollege:tease.userCollege,widget_mark:tease.widget_mark,widget_set_2: tease.widget_set_2,
                 kind:tease.kind,time:tease.time,content_title:tease.content_title,great_comment:tease.great_comment,upItNum: tease.upItNum,commentNum: tease.commentNum,
-                widget_set2: tease.widget_set));
+                widget_set2: tease.widget_set);
+            great_tease.add(tease_ds);
           }
           print("接受完毕");
           setState(() {
@@ -479,6 +480,16 @@ class _Board extends State<Board> {
           ),
         ),
         onRefresh: _handleRefresh,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) {
+                return writeOneTease();
+              }
+          ));
+        },
+        child: Icon(Icons.brush),
       ),
     );
   }
