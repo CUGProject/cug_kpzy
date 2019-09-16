@@ -93,12 +93,12 @@ class _FollowState extends State<Follow> {
                            children: <Widget>[
                              new Text("评论数" + article.commentNum.toString(),style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
                              new Container(
-                               width: 30,
+                               width: 20,
                              ),
                              new Icon(Icons.attach_money,size: 17,),
                              new Text(article.money.toString() + "元",style: new TextStyle(color: Colors.black45,fontSize: 11.0),),
                              new Container(
-                               width: 30,
+                               width: 20,
                              ),
                              new Container(
                                alignment: Alignment.centerRight,

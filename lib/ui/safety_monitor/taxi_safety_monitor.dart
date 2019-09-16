@@ -1,10 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:amap_base/amap_base.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:flutter_ui_framework/database/user_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_alert/easy_alert.dart';
+import 'dart:convert';
+
 /*
 本代码针对的是打车安全出行界面
  */
@@ -38,6 +39,7 @@ class _TaxiSafetyMonitor extends State<TaxiSafetyMonitor>
   String longitude = " ";
   String latitude = " ";
   String class_name;
+  String safety_number = "0";//安全系数
   String student_number;
   //初始化定位监听
   void _initLocation() async {
@@ -50,9 +52,9 @@ class _TaxiSafetyMonitor extends State<TaxiSafetyMonitor>
       _amapLocation.startLocate(options).listen((_) => setState(() {
         _result =
         '坐标：${_.longitude}，${_.latitude} @ ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}';
-        print(_result);
-        longitude = _.longitude.toString().substring(0,9);
-        latitude = _.latitude.toString().substring(0,7);
+        //print(_result);
+        longitude = _.longitude.toString();
+        latitude = _.latitude.toString();
       }));
     } else {
       setState(() {
@@ -100,8 +102,8 @@ class _TaxiSafetyMonitor extends State<TaxiSafetyMonitor>
       print("post方式->body: ${response.body}");
       destination_controller.clear();
       if(response.body == "1"){
-        print("middle 测试-----------------1");
-        //PostMiddle();
+        //print("middle 测试-----------------1");
+        PostMiddle();
       }
     });
   }
@@ -111,7 +113,7 @@ class _TaxiSafetyMonitor extends State<TaxiSafetyMonitor>
     while(true)
       {
         String url = "http://www.cugkpzy.com/route_data_upload_middle";
-        print("middle 测试-----------------2");
+        //print("middle 测试-----------------2");
         Map<String,String> json_data = {};
         json_data.addAll({"class_name":class_name});
         json_data.addAll({"name":student_number});
@@ -119,8 +121,15 @@ class _TaxiSafetyMonitor extends State<TaxiSafetyMonitor>
         json_data.addAll({"now_lat":latitude});
         await http.post(url, body: json_data)
             .then((response) {
+          if(response.body != "0")
+            {
+              print("post方式->body: ${response.body}");
+              Map<String,dynamic> reqmap = json.decode(response.body);
+              setState(() {
+                safety_number = reqmap["safety_state_between_start_point_now_point"].toString();
+              });
+            }
           //print("post方式->status: ${response.statusCode}");
-          print("post方式->body: ${response.body}");
       });
       }
   }
@@ -145,7 +154,7 @@ class _TaxiSafetyMonitor extends State<TaxiSafetyMonitor>
         Container(height:Size.width/12),
         Text("当前安全系数",style: TextStyle(color: Color(0xFF00FA9A),fontSize: 22,fontWeight: FontWeight.w400),),
         Container(height:Size.width/40),
-        Container(child: Text("0",style: TextStyle(color: Colors.cyan,fontSize: 80,fontWeight: FontWeight.w500),),),
+        Container(child: Text(safety_number,style: TextStyle(color: Colors.cyan,fontSize: 80,fontWeight: FontWeight.w500),),),
         Container(height:Size.width/50),
         Text("分析结果基于大数据",style: TextStyle(color: Color(0xFF00FA9A),fontSize: 12,fontWeight: FontWeight.w400),),
       ],),

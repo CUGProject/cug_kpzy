@@ -12,8 +12,16 @@ class Article {
 
 List<Article> articleList = [
   new Article(
+    headUrl: "https://pic4.zhimg.com/50/v2-9a3cb5d5ee4339b8cf4470ece18d404f_s.jpg",
+    title: "地大今年招生分数大概是多少，孩子550，有把握么？",
+    agreeNum: 10,
+    id: "2019-9-23-4-15",
+    money: 5,
+    commentNum: 1000,
+  ),
+  new Article(
       headUrl: "https://pic4.zhimg.com/50/v2-9a3cb5d5ee4339b8cf4470ece18d404f_s.jpg",
-      title: "我的手机系统是安卓。无意间发现自己的屏幕被人监控，请问怎样才能彻底摆脱被监控的处境呢？",
+      title: "兴趣对于专业选择重要么？孩子喜欢数学，但是就业不太好",
       agreeNum: 10,
       money: 5,
       id: "2019-9-23-4-15",
@@ -21,7 +29,7 @@ List<Article> articleList = [
   ),
   new Article(
     headUrl: "https://pic4.zhimg.com/50/v2-9a3cb5d5ee4339b8cf4470ece18d404f_s.jpg",
-    title: "我的手机系统是安卓。无意间发现自己的屏幕被人监控，请问怎样才能彻底摆脱被监控的处境呢？",
+    title: "我高考分数580，今年可以考上一个不错的211么？",
     agreeNum: 10,
     money: 5,
     id: "2019-9-23-4-15",
@@ -29,23 +37,16 @@ List<Article> articleList = [
   ),
   new Article(
     headUrl: "https://pic4.zhimg.com/50/v2-9a3cb5d5ee4339b8cf4470ece18d404f_s.jpg",
-    title: "我的手机系统是安卓。无意间发现自己的屏幕被人监控，请问怎样才能彻底摆脱被监控的处境呢？",
+    title: "姐姐在上海上班，但是上海的好学校去不了，因为亲人在选择一个城市可以么？",
     agreeNum: 10,
     money: 5,
     id: "2019-9-23-4-15",
     commentNum: 1000,
   ),
+
   new Article(
     headUrl: "https://pic4.zhimg.com/50/v2-9a3cb5d5ee4339b8cf4470ece18d404f_s.jpg",
-    title: "我的手机系统是安卓。无意间发现自己的屏幕被人监控，请问怎样才能彻底摆脱被监控的处境呢？",
-    agreeNum: 10,
-    id: "2019-9-23-4-15",
-    money: 5,
-    commentNum: 1000,
-  ),
-  new Article(
-    headUrl: "https://pic4.zhimg.com/50/v2-9a3cb5d5ee4339b8cf4470ece18d404f_s.jpg",
-    title: "我的手机系统是安卓。无意间发现自己的屏幕被人监控，请问怎样才能彻底摆脱被监控的处境呢？",
+    title: "平时成绩不错，高考考的很差，想着比同龄人小一岁，计划二战，值得么？",
     agreeNum: 10,
     money: 5,
     id: "2019-9-23-4-15",
