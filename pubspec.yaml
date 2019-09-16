@@ -22,10 +22,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+  amap_base: ^0.2.12
   video_player: ^0.10.2+1
   chewie: ^0.9.7
   flutter_ijkplayer: ^0.3.3
   flutter_swiper: ^1.0.6
+  easy_alert:
   crypto: ^2.0.6
   flutter_cache_manager: ^1.1.1
   #flutter_webview_plugin: ^0.2.1
@@ -42,7 +44,7 @@ dependencies:
   flutter_markdown: ^0.2.0
   path_provider: 0.5.0
   timeline_list: ^0.0.4
-  simple_permissions: 0.1.9
+  simple_permissions:
   zefyr:
     git:
       url: https://github.com/memspace/zefyr.git
